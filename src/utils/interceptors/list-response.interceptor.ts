@@ -56,7 +56,7 @@ implements NestInterceptor<T, any> {
 
     return next.handle().pipe(
       map((resp) => {
-        const { count, rows, ...additionalMeta } = circularToJSON(resp);
+        const { count, rows, ...additionalMeta } = resp;
 
         // eslint-disable-next-line no-underscore-dangle
         this.queryString = request._parsedUrl.query || '';
