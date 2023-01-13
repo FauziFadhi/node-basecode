@@ -5,10 +5,8 @@ import * as path from 'path';
 const env = dotenv.parse(fs.readFileSync('.env'));
 export default {
   dialect: env.DB_CONNECTION,
-  logging: (log: any): void => {
-    console.log('\x1b[33m', log, '\x1b[0m', '\n');
-  },
-  logQueryParameters: true,
+  logging: false,
+  logQueryParameters: false,
   define: {
     underscored: true,
   },
@@ -30,11 +28,15 @@ export default {
       port: +env.DB_PORT,
     },
   },
-  dialectOptions: {
-    decimalNumbers: true,
-    timezone: '+07:00',
+  pool: {
+    min: 0,
+    max: 30,
   },
-  timezone: '+07:00',
+  dialectOptions: {
+    // decimalNumbers: true,
+    // timezone: '+07:00',
+  },
+  // timezone: '+07:00',
   models: [path.join(__dirname, '../../models/core')],
   synchronize: false,
 };

@@ -1,5 +1,5 @@
 import {
-  ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus,
+  ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import * as JSONAPISerializer from 'json-api-serializer';
@@ -10,6 +10,12 @@ const Serializer = new JSONAPISerializer();
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
+  constructor(
+    private readonly logger: Logger,
+  ) {
+
+  }
+
   catch(exception: HttpException | any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response: Response = ctx.getResponse();
@@ -27,13 +33,15 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const stack = exception?.stack || null;
     const errorResponse = (exception)?.response;
 
-    console.log('\x1b[36m', stack, '\x1b[0m');
+    // console.log('\x1b[36m', stack, '\x1b[0m');
 
     const errorCode = errorResponse?.error || errorResponse?.code || undefined;
 
     const errorMessage = errorResponse?.message
     || exception?.message
     || exception;
+
+    this.logger.error(errorMessage, stack, 'ALLEXCEPTION FILTER');
 
     const meta = {
       path: url,

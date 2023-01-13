@@ -1,5 +1,5 @@
 import { AppsModule } from '@apps/apps.module';
-import { VersioningType } from '@nestjs/common';
+import { Logger, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -22,7 +22,7 @@ async function bootstrap() {
       enableImplicitConversion: true,
     },
   }));
-  app.useGlobalFilters(new AllExceptionsFilter());
+  app.useGlobalFilters(new AllExceptionsFilter(new Logger()));
 
   app.enableVersioning({
     type: VersioningType.URI,
