@@ -1,6 +1,7 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { Cache } from 'cache-manager';
+import { h64 } from 'xxhashjs';
 
 @Injectable()
 export class CacheService {
@@ -34,8 +35,8 @@ export class CacheService {
     ttl: number,
     setValue: () => T | Promise<T>,
   ): Promise<T | null> {
-    const hash = crypto.createHash('md5');
-    const generatedKey = hash.update(JSON.stringify(key)).digest('base64');
+    const hash = h64(0xABCD);
+    const generatedKey = hash.update(JSON.stringify(key)).digest().toString(16);
 
     let cacheValue = await this.cacheManager.get(generatedKey);
 
