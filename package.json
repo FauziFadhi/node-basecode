@@ -34,7 +34,7 @@
     "@nestjs/sequelize": "^9.0.0",
     "@nestjs/swagger": "^6.1.4",
     "@types/express": "^4.17.15",
-    "base-repo": "^3.1.4",
+    "base-repo": "^3.1.6",
     "bcrypt": "^5.0.1",
     "cache-manager": "^4.1.0",
     "cache-manager-redis-store": "^2.0.0",
