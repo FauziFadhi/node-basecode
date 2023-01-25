@@ -2,7 +2,7 @@ import { Role } from '@models/core/Role';
 import { User } from '@models/core/User';
 import { UserLogin } from '@models/core/UserLogin';
 import { UserRole } from '@models/core/UserRole';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Transaction } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { AuthService } from './auth.service';
@@ -39,8 +39,9 @@ export class UserService {
   }
 
   async getUser(userId: number): Promise<User & { roles: Role[] }> {
-    const user = await User.findOneCache({
-      ttl: 30,
+    const user = await User.findOne({
+      // ttl: 30,
+      rejectOnEmpty: new BadRequestException(),
       where: {
         id: userId,
       },
