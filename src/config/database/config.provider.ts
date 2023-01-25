@@ -17,6 +17,11 @@ export class SequelizeConfigService implements SequelizeOptionsFactory {
       logging: false,
       logQueryParameters: false,
       define: {
+        defaultScope: {
+          attributes: {
+            exclude: ['createdAt', 'updatedAt', 'deletedAt'],
+          },
+        },
         underscored: true,
       },
       replication: {
