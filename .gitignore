@@ -39,5 +39,6 @@ lerna-debug.log*
 .env.dev
 .env.uat
 .env.prod
+.env.*
 
 src/modules/_common/secret

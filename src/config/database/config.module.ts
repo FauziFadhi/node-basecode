@@ -8,6 +8,7 @@ import schema from './schema';
   imports: [
     ConfigModule.forRoot({
       validationSchema: schema,
+      envFilePath: process.env.DB_ENV ? `.env.${process.env.DB_ENV}` : '.env',
     }),
     SequelizeModule.forRootAsync({ useClass: SequelizeConfigService }),
   ],
