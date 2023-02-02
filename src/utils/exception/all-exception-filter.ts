@@ -1,8 +1,8 @@
 import {
   ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
 import * as JSONAPISerializer from 'json-api-serializer';
+import { FastifyReply, FastifyRequest } from 'fastify';
 import { VALIDATION_CODE } from '../error';
 
 // tslint:disable-next-line:variable-name
@@ -10,17 +10,17 @@ const Serializer = new JSONAPISerializer();
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  constructor(
-    private readonly logger: Logger,
-  ) {
+  private readonly logger: Logger;
 
+  constructor() {
+    this.logger = new Logger();
   }
 
   catch(exception: HttpException | any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const response: Response = ctx.getResponse();
+    const response: FastifyReply = ctx.getResponse();
 
-    const request: Request = ctx.getRequest();
+    const request: FastifyRequest = ctx.getRequest();
 
     // const isAcceptedApi = request.url.includes('api/');
 
@@ -57,7 +57,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
           pointer: errmsg.field,
         } : undefined,
         code: errorCode,
-        status: status as any,
+        status: `${status}`,
         meta: index === 0 && meta,
         detail: errmsg.message,
       }));
@@ -66,33 +66,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
     } else {
       errorDefault = {
         code: errorCode,
-        status: status as any,
+        status: `${status}`,
         meta,
         detail: errorMessage,
       };
     }
 
-    // Log.create(
-    //   {
-    //     type: LOG_TYPE_ERR,
-    //     code: errorCode || '00',
-    //     title: 'ERROR',
-    //     branch: user?.clinic?.id || 0,
-    //     detail:
-    //       (typeof errorMessage == 'object' && JSON.stringify(errorMessage)) ||
-    //       errorMessage,
-    //     request: request.body,
-    //     user,
-    //     url,
-    //     reference: stack,
-    //     statusCode: status,
-    //     date: dateNow().toDate().toString(),
-    //     headers,
-    //   },
-    //   { logging: false },
-    // );
-
-    response.status(status).json(Serializer.serializeError(errorDefault));
+    response.status(status).send(Serializer.serializeError(errorDefault));
   }
 
   private httpExceptionHandling(exception: HttpException) {
