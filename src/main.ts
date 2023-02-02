@@ -1,8 +1,8 @@
 import { AppsModule } from '@apps/apps.module';
-import { Logger, VersioningType } from '@nestjs/common';
+import { VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { NestExpressApplication } from '@nestjs/platform-express';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AllExceptionsFilter } from '@utils/exception/all-exception-filter';
 import { CustomValidationPipe } from '@utils/pipe/ValidationPipe';
@@ -17,7 +17,7 @@ async function bootstrap() {
    * enable();
    * disableLinkedTop();
    */
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
 
   app.useGlobalPipes(new CustomValidationPipe({
     whitelist: true,
@@ -27,7 +27,7 @@ async function bootstrap() {
       enableImplicitConversion: true,
     },
   }));
-  app.useGlobalFilters(new AllExceptionsFilter(new Logger()));
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   app.enableVersioning({
     type: VersioningType.URI,
