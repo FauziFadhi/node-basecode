@@ -30,5 +30,5 @@ export class Role extends Model<IModel, IModelCreate> implements IModel {
 
   @AllowNull(false)
   @Column
-    name: string;
+  declare name: string;
 }

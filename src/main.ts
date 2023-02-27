@@ -8,6 +8,9 @@ import { AllExceptionsFilter } from '@utils/exception/all-exception-filter';
 import { CustomValidationPipe } from '@utils/pipe/ValidationPipe';
 import { install } from 'source-map-support';
 
+import { satisfies } from 'semver';
+import { engines } from '../package.json';
+
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -50,6 +53,13 @@ async function bootstrap() {
     allowedHeaders: '*',
     credentials: false,
   });
+
+  const version = engines.node;
+  if (!satisfies(process.version, version)) {
+    console.log(`Required node version ${version} not satisfied with current version ${process.version}.`);
+    process.exit(1);
+  }
+
   const configService = app.get(ConfigService);
   const appPort = configService.get<number>('app.port');
   await app.listen(appPort || 3000);

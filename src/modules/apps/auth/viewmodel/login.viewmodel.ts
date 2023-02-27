@@ -4,17 +4,9 @@ import { Expose } from 'class-transformer';
 export class LoginVm {
   // @example asdasdasd
   @Expose()
-    expiresIn = 'asdasd';
+    expiresIn: number;
 
   // @example 50
   @Expose()
-    token = 'cvxcvcxv';
-}
-
-export class TestVm {
-  @Expose()
-    name = 'Fauzi';
-
-  @Expose()
-    age = 50;
+    token: string;
 }
