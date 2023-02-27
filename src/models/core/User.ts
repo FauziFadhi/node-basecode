@@ -49,35 +49,27 @@ export class User extends Model<IModel, IModelCreate> implements IModel {
   declare id: number;
 
   @BelongsTo(() => UserLogin)
-    userLogin?: Attributes<UserLogin>;
+  declare userLogin?: Attributes<UserLogin>;
 
   @AllowNull(false)
   @ForeignKey(() => UserLogin)
   @Column
-    userLoginId: number;
+  declare userLoginId: number;
 
   @AllowNull(false)
   @Column
-    name: string;
+  declare name: string;
 
   @AllowNull(false)
   @Column
-    email: string;
+  declare email: string;
 
   @Column
-    code: string;
+  declare code: string;
 
   @Column
-    phone: string;
+  declare phone: string;
 
   @BelongsToMany(() => Role, () => UserRole)
-    roles: Role[];
-
-  @BeforeCreate
-  static async generateCode(model: User, options) {
-    model.code = sequelize.literal(`(
-      with lastCount as (select count(*) as count from "user")
-      select lastCount.count+1 from lastCount
-    )`) as any;
-  }
+  declare roles: Role[];
 }

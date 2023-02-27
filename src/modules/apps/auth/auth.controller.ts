@@ -5,7 +5,7 @@ import {
 
 import { AuthService } from './auth.service';
 import { LoginRequest } from './request/login.request';
-import { LoginVm, TestVm } from './viewmodel/login.viewmodel';
+import { LoginVm } from './viewmodel/login.viewmodel';
 
 @ApiTags('Authentication')
 @Controller({ path: 'auth', version: '1' })
@@ -17,7 +17,7 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() body: LoginRequest): Promise<LoginVm | TestVm> {
-    return this.authService.login(body) as any;
+  async login(@Body() body: LoginRequest): Promise<LoginVm> {
+    return this.authService.login(body);
   }
 }

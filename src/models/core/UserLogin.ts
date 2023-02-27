@@ -50,16 +50,16 @@ export class UserLogin
 
   @AllowNull(false)
   @Column
-    username: string;
+  declare username: string;
 
   @AllowNull(false)
   @Column
-    password: string;
+  declare password: string;
 
   @Default(false)
   @Column
-    isActive: boolean;
+  declare isActive: boolean;
 
   @HasOne(() => User)
-    user: User;
+  declare user: User;
 }

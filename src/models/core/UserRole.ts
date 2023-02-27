@@ -32,14 +32,14 @@ export class UserRole extends Model<IModel, IModelCreate> implements IModel {
   declare id: number;
 
   @BelongsTo(() => User)
-    user: User;
+  declare user: User;
 
   @ForeignKey(() => User)
-    userId: number;
+  declare userId: number;
 
   @BelongsTo(() => Role)
-    role: Role;
+  declare role: Role;
 
   @ForeignKey(() => Role)
-    roleId: number;
+  declare roleId: number;
 }
