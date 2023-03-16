@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppsModule } from 'modules/apps/apps.module';
 
 import { CONFIG_MODULES } from 'app.provider';
+import { ClsModule } from 'nestjs-cls';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CommonModule } from './modules/_common/common.module';
@@ -11,6 +12,9 @@ import { CmsModule } from './modules/cms/cms.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ClsModule.forRoot({
+      global: true,
+    }),
     AppsModule,
     CmsModule,
     CommonModule,
