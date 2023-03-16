@@ -15,11 +15,6 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   install();
-  /**
-   * uncomment these lines, import from async-local-storage
-   * enable();
-   * disableLinkedTop();
-   */
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
 
   app.useGlobalPipes(new CustomValidationPipe({

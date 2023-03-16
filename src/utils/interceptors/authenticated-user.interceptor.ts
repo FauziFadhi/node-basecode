@@ -1,26 +1,19 @@
 import {
-  Injectable, NestInterceptor, ExecutionContext, CallHandler,
+  Injectable, ExecutionContext, CallHandler,
 } from '@nestjs/common';
+import { ClsService } from 'nestjs-cls';
 import { Observable } from 'rxjs';
-// import {
-//   set, scope,
-// } from 'async-local-storage';
 
-/**
- * used for storing authenticated user that can accessed globally
- * if you want using this interceptor.
- * call function `enable` and `disableLinkedTop` at `main.ts bootstrap`
- */
 @Injectable()
-export class AuthenticatedUserInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const req = context.switchToHttp().getRequest();
-    /**
-     * uncomment these lines
-     * scope();
-     * set('user', req.user);
-     */
+export class AuthenticatedUserInterceptor {
+  constructor(
+    private readonly clsService: ClsService,
+  ) {
 
+  }
+
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    this.clsService.set('user', context.switchToHttp().getRequest().user || null);
     return next
       .handle();
   }
