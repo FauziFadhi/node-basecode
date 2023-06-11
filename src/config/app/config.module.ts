@@ -4,10 +4,14 @@ import { BaseResource } from '@utils/base-class/base.resource';
 import config from './config';
 import schema from './schema';
 
+export async function getModuleEnv<T>(configModule: T): Promise<T> {
+  await ConfigModule.envVariablesLoaded;
+  return configModule;
+}
+
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
       load: [config],
       expandVariables: true,
       validationSchema: schema,

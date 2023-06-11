@@ -1,5 +1,5 @@
 import { AppsModule } from '@apps/apps.module';
-import { VersioningType } from '@nestjs/common';
+import { Logger, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
@@ -9,13 +9,16 @@ import { CustomValidationPipe } from '@utils/pipe/ValidationPipe';
 import { install } from 'source-map-support';
 
 import { satisfies } from 'semver';
+import * as qs from 'qs';
 import { engines } from '../package.json';
 
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   install();
-  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
+  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
+    querystringParser: (str: string) => qs.parse(str),
+  }));
 
   app.useGlobalPipes(new CustomValidationPipe({
     whitelist: true,
@@ -58,5 +61,6 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const appPort = configService.get<number>('app.port');
   await app.listen(appPort || 3000, '0.0.0.0');
+  new Logger().log(`Your Application run in ${await app.getUrl()}`, 'Nest Application');
 }
 bootstrap();

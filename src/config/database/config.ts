@@ -1,42 +1,56 @@
-import * as dotenv from 'dotenv';
-import * as fs from 'fs';
-import * as path from 'path';
+import { registerAs } from '@nestjs/config';
+import { join } from 'path';
 
-const env = dotenv.parse(fs.readFileSync('.env'));
-export default {
-  dialect: env.DB_CONNECTION,
-  logging: false,
-  logQueryParameters: false,
-  define: {
-    underscored: true,
-  },
-  replication: {
-    read: [
-      {
-        database: env.DB_READ_NAME,
-        username: env.DB_READ_USERNAME,
-        password: env.DB_READ_PASSWORD,
-        host: env.DB_READ_HOST,
-        port: +env.DB_READ_PORT,
-      },
-    ],
-    write: {
-      database: env.DB_NAME,
-      username: env.DB_USERNAME,
-      password: env.DB_PASSWORD,
-      host: env.DB_HOST,
-      port: +env.DB_PORT,
+export default registerAs('database', () => ({
+  connection: process.env.DB_CONNECTION,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  name: process.env.DB_NAME,
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  readHost: process.env.DB_READ_HOST,
+  readPort: process.env.DB_READ_PORT,
+  readName: process.env.DB_READ_NAME,
+  readUsername: process.env.DB_READ_USERNAME,
+  readPassword: process.env.DB_READ_PASSWORD,
+}));
+
+export function configMapping(dbConfig) {
+  return {
+    dialect: dbConfig.connection,
+    logging: false,
+    logQueryParameters: false,
+    define: {
+      underscored: true,
     },
-  },
-  pool: {
-    min: 0,
-    max: 30,
-  },
-  dialectOptions: {
-    // decimalNumbers: true,
+    replication: {
+      read: [
+        {
+          database: dbConfig.readName,
+          username: dbConfig.readUsername,
+          password: dbConfig.readPassword,
+          host: dbConfig.readHost,
+          port: +dbConfig.readPort,
+        },
+      ],
+      write: {
+        database: dbConfig.name,
+        username: dbConfig.username,
+        password: dbConfig.password,
+        host: dbConfig.host,
+        port: +dbConfig.port,
+      },
+    },
+    pool: {
+      min: 0,
+      max: 30,
+    },
+    dialectOptions: {
+      // decimalNumbers: true,
+      // timezone: '+07:00',
+    },
     // timezone: '+07:00',
-  },
-  // timezone: '+07:00',
-  models: [path.join(__dirname, '../../models/core')],
-  synchronize: false,
-};
+    models: [join(__dirname, '../../models/core')],
+    synchronize: false,
+  };
+}

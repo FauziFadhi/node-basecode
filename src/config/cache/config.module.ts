@@ -1,3 +1,4 @@
+import { getModuleEnv } from '@config/app/config.module';
 import {
   CACHE_MANAGER, CacheModule, Inject, Module,
 } from '@nestjs/common';
@@ -12,11 +13,20 @@ import schema from './schema';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
+    getModuleEnv(ConfigModule.forRoot({
       load: [config],
       validationSchema: schema,
-      isGlobal: true,
-    }),
+      envFilePath: [`.env.${process.env.CACHE_ENV}`, '.env'],
+      validate(con) {
+        return {
+          CACHE_HOST: con.CACHE_HOST,
+          CACHE_PORT: con.CACHE_PORT,
+          CACHE_TTL: con.CACHE_TTL,
+          CACHE_PREFIX: con.CACHE_PREFIX,
+          CACHE_PASSWORD: con.CACHE_PASSWORD,
+        };
+      },
+    })),
     CacheModule.registerAsync({
       useClass: CacheConfigProvider,
     }),

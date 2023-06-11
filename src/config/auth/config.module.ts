@@ -8,7 +8,6 @@ import schema from './schema';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
       load: [config],
       expandVariables: true,
       validationSchema: schema,
