@@ -25,7 +25,11 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@bull-board/api": "^5.5.1",
+    "@bull-board/fastify": "^5.5.1",
+    "@bull-board/nestjs": "^5.5.1",
     "@fastify/static": "^6.10.2",
+    "@nestjs/bull": "^10.0.0",
     "@nestjs/common": "^9.4.2",
     "@nestjs/config": "^2.3.2",
     "@nestjs/core": "^9.4.2",
@@ -36,6 +40,7 @@
     "@nestjs/swagger": "^6.3.0",
     "base-repo": "^3.1.8",
     "bcrypt": "^5.1.0",
+    "bull": "^4.10.4",
     "cache-manager": "^4.1.0",
     "cache-manager-redis-store": "^2.0.0",
     "class-transformer": "^0.5.1",
