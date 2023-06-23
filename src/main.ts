@@ -10,6 +10,7 @@ import { install } from 'source-map-support';
 
 import { satisfies } from 'semver';
 import * as qs from 'qs';
+import * as cookieParser from 'cookie-parser';
 import { engines } from '../package.json';
 
 import { AppModule } from './app.module';
@@ -19,6 +20,8 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
     querystringParser: (str: string) => qs.parse(str),
   }));
+
+  app.use(cookieParser());
 
   app.useGlobalPipes(new CustomValidationPipe({
     whitelist: true,
