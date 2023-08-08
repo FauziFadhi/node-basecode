@@ -2,6 +2,8 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
+    "builder": "swc",
+    "typeCheck": true,
     "assets": [],
     "watchAssets": true,
     "plugins": [
@@ -10,9 +12,7 @@
         "options": {
           "introspectComments": true,
           "classValidatorShim": true,
-          "controllerFileNameSuffix": [
-            ".controller.ts"
-          ],
+          "controllerFileNameSuffix": [".controller.ts"],
           "dtoFileNameSuffix": [
             ".viewmodel.ts",
             ".request.ts",
