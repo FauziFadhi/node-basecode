@@ -1,6 +1,6 @@
 import { AutoInvalidate, Model } from 'base-repo';
 import { BelongsTo, ForeignKey, Table } from 'sequelize-typescript';
-import { IUnfilledAtt, Optional } from 'utils/base-class/base.interface';
+import { IUnfilledAtt, Optional } from '@utils/base-class/base.interface';
 
 import { Role } from './Role';
 import { User } from './User';

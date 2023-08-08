@@ -18,3 +18,5 @@ export type Optional<T> = {
 export type RelationAttribute<M extends Model, T = 'attributes', ForeignKey extends string = ''> = T extends 'attributes'
   ? Attributes<M>
   : Omit<CreationAttributes<M>, ForeignKey>;
+
+// export type WrapperType<T> = T;

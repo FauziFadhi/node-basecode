@@ -30,14 +30,13 @@ export class UserVm {
     email: string;
 
   @Expose()
-    gender: EGender = EGender.male;
+    gender: EGender;
 
   @Transform(({ obj }) => `${obj.name}+${obj.id}`)
   @Expose()
-    nationality?: string = 'ID';
+    nationality?: string;
 
   @Expose()
-  @ValidateNested()
   @Type(() => RoleVm)
     roles: RoleVm[];
 }

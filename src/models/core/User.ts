@@ -1,10 +1,10 @@
 import { AutoInvalidate, Model } from 'base-repo';
-import sequelize from 'sequelize';
 import {
-  AllowNull, BeforeCreate, BelongsTo, BelongsToMany, Column, ForeignKey, Table,
+  AllowNull, BelongsTo, BelongsToMany, Column, ForeignKey, Table,
 } from 'sequelize-typescript';
-import { Attributes } from 'sequelize/types';
-import { IUnfilledAtt, Optional, RelationAttribute } from 'utils/base-class/base.interface';
+import {
+  IUnfilledAtt, Optional, RelationAttribute,
+} from '@utils/base-class/base.interface';
 
 import { Role } from './Role';
 import { UserLogin } from './UserLogin';
@@ -49,7 +49,7 @@ export class User extends Model<IModel, IModelCreate> implements IModel {
   declare id: number;
 
   @BelongsTo(() => UserLogin)
-  declare userLogin?: Attributes<UserLogin>;
+  declare userLogin?: UserLogin;
 
   @AllowNull(false)
   @ForeignKey(() => UserLogin)

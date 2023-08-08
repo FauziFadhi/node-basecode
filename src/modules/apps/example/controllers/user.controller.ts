@@ -31,7 +31,6 @@ export class UserController {
   }
 
   @Get(':id')
-  @UseInterceptors(new ResponseInterceptor('user'))
   async getUser(
     @Param('id', ParseIntPipe) id: number,
       @LoggedUser() loggedUser: ILoggedUser,
@@ -42,7 +41,6 @@ export class UserController {
   }
 
   @Post()
-  @UseInterceptors(new ResponseInterceptor('user'))
   async createUser(@Body() body: CreateUserReq) {
     const user = await this.userService.createUser(body);
 

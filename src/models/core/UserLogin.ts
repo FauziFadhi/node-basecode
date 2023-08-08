@@ -2,7 +2,6 @@ import { AutoInvalidate, Model } from 'base-repo';
 import {
   AllowNull, Column, Default, HasOne, Scopes, Table,
 } from 'sequelize-typescript';
-import { Attributes } from 'sequelize/types';
 import { IUnfilledAtt, Optional, RelationAttribute } from 'utils/base-class/base.interface';
 
 import { User } from './User';
