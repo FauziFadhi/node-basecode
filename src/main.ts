@@ -13,6 +13,7 @@ import * as qs from 'qs';
 import { engines } from '../package.json';
 
 import { AppModule } from './app.module';
+import { GlobalCustomResponseInterceptor } from '@utils/interceptors/global-response.interceptor';
 
 async function bootstrap() {
   install();
@@ -35,6 +36,7 @@ async function bootstrap() {
   });
 
   app.setGlobalPrefix('api');
+  app.useGlobalInterceptors(new GlobalCustomResponseInterceptor());
 
   const config = new DocumentBuilder()
     .setTitle('Apps')

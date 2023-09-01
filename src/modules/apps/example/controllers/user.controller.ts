@@ -18,11 +18,11 @@ import { ILoggedUser } from '@apps/auth/interface/logged-user.interface';
 import { ApiTags } from '@nestjs/swagger';
 import { CacheTTL } from '@nestjs/cache-manager';
 import { UserCacheInterceptor } from '@utils/interceptors/user-cache.interceptor';
+import { UserCacheCdnInterceptor } from '@utils/interceptors/user-cache-cdn.interceptor';
+import { UserCacheCdnType } from '@utils/enum/user-cache-cdn-type.enum';
 import { UserVm } from './viewmodel/user.viewmodel';
 import { UserService } from '../service/user.service';
 import { CreateUserReq } from './request/create-user.request';
-import { UserCacheCdnInterceptor } from '@utils/interceptors/user-cache-cdn.interceptor';
-import { UserCacheCdnType } from '@utils/enum/user-cache-cdn-type.enum';
 
 @UseGuards(AuthGuard(['auth', 'anonym']))
 @Controller({ version: '1', path: 'users' })
@@ -33,6 +33,12 @@ export class UserController {
   ) {
 
   }
+
+  someBody: any = {
+    name: 'Supardi',
+    email: 'supardi@mail.com',
+    superheroAlias: 'Suparman At Madness',
+  };
 
   @Get(':id')
   async getUser(
@@ -51,19 +57,18 @@ export class UserController {
     return transformer(UserVm, user);
   }
 
-  @CacheTTL(20)
+  @CacheTTL(60)
   @UseInterceptors(new UserCacheCdnInterceptor(UserCacheCdnType.private))
   @Post('x1')
   async testTllCdn(@Body() body: any) {
-    return body;
+    this.someBody = body;
+    return this.someBody;
   }
 
   @CacheTTL(60)
   @UseInterceptors(new UserCacheCdnInterceptor(UserCacheCdnType.private))
   @Get('x1')
   async testTllCdn1() {
-    return {
-      name: 'delvin',
-    };
+    return this.someBody;
   }
 }
