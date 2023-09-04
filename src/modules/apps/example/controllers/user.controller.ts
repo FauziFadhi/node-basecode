@@ -71,4 +71,19 @@ export class UserController {
   async testTllCdn1() {
     return this.someBody;
   }
+
+  @CacheTTL(60)
+  @UseInterceptors(new UserCacheCdnInterceptor(UserCacheCdnType.public))
+  @Post('x2')
+  async testTllCdnPublic(@Body() body: any) {
+    this.someBody = body;
+    return this.someBody;
+  }
+
+  @CacheTTL(60)
+  @UseInterceptors(new UserCacheCdnInterceptor(UserCacheCdnType.public))
+  @Get('x2')
+  async testTllCdn1Public() {
+    return this.someBody;
+  }
 }
