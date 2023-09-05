@@ -10,6 +10,7 @@ import { install } from 'source-map-support';
 
 import { satisfies } from 'semver';
 import * as qs from 'qs';
+import * as fastifyMulter from 'fastify-multer';
 import { engines } from '../package.json';
 
 import { AppModule } from './app.module';
@@ -20,6 +21,8 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
     querystringParser: (str: string) => qs.parse(str),
   }));
+
+  app.register(fastifyMulter.contentParser as any);
 
   app.useGlobalPipes(new CustomValidationPipe({
     whitelist: true,

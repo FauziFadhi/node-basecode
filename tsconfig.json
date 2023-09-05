@@ -26,7 +26,7 @@
       "@utils/*": ["./utils/*"],
       "@cms/*": ["./modules/cms/*"],
       "@apps/*": ["./modules/apps/*"],
-      "@middleware/*": ["./modules/apps/*"],
+      "@middleware/*": ["./modules/middleware/*"],
       "@_common/*": ["./modules/_common/*"],
       "@config/*": ["./config/*"]
     }

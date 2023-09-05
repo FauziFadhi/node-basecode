@@ -5,7 +5,7 @@ import { AppsModule } from '@apps/apps.module';
 import { ClsModule } from 'nestjs-cls';
 import { CommonModule } from '@_common/common.module';
 import { CmsModule } from '@cms/cms.module';
-import { CONFIG_MODULES } from './app.provider';
+import { CONFIG_MODULES, MIDDLEWARE_MODULES } from './app.provider';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -19,6 +19,7 @@ import { AppService } from './app.service';
     CmsModule,
     CommonModule,
     ...CONFIG_MODULES,
+    ...MIDDLEWARE_MODULES,
   ],
   controllers: [AppController],
   providers: [AppService],
