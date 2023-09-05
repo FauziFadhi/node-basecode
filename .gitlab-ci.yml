@@ -62,7 +62,7 @@ build_image:
     name: gcr.io/kaniko-project/executor:v1.9.1-debug
     entrypoint: [""]
   variables:
-    TAG_NAME: "node-basecode-V10-rc1-x1"
+    TAG_NAME: "node-basecode-$CI_COMMIT_REF_NAME"
   script:
     - mkdir -p /kaniko/.docker
     - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
@@ -83,6 +83,7 @@ build_image:
   needs: ["build"]
   only:
     - V10-rc1-x1
+    - V10-rc1-x2
 
 deploy:
   stage: deploy
@@ -96,8 +97,9 @@ deploy:
     - ssh-keyscan $SSH_DEV_HOST >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
-    - ssh $SSH_DEV_USER@$SSH_DEV_HOST "cd /home/deploy/rnd/V10-rc1-x1 && ./deploy.sh $CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA"
+    - ssh $SSH_DEV_USER@$SSH_DEV_HOST "cd /home/deploy/rnd/V10-rc1-x2 && ./deploy.sh $CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA"
   cache: []
   needs: ["build_image"]
   only:
-  - V10-rc1-x1
+    - V10-rc1-x1
+    - V10-rc1-x2
