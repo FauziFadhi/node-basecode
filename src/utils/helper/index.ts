@@ -2,30 +2,31 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { ClassTransformOptions, plainToInstance } from 'class-transformer';
 import { FOLDER_COMMON, IMAGE_MIME, IMAGE_URL } from '@utils/constant';
 
-export const circularToJSON = (circular: unknown) => JSON.parse(JSON.stringify(circular));
+export const circularToJSON = (circular: unknown) => circular && JSON.parse(JSON.stringify(circular));
 
 /**
- * A description of the entire function.
  *
- * @param {V} cls - The class to be transformed.
- * @param {ConstructorParameters<V>[0]} obj - The object to be transformed.
- * @param {ClassTransformOptions & { raw?: boolean }} options - The transformation options (optional).
- * @return {T} The transformed object.
+ * @param {type} cls - the class to transform
+ * @param {type} obj - the object to transform
+ * @param {type} options - additional options for the transformation
+ * @return {type} the transformed instance of the class
  */
-export function transformer<T, V extends { new (...args: unknown[]): T }>(
+export function transformer<V extends { new (...args: unknown[]): unknown },
+    T extends ConstructorParameters<V>[0]>(
   cls: V,
-  obj: ConstructorParameters<V>[0] extends undefined ? unknown : ConstructorParameters<V>[0],
+  obj: T extends undefined ? { [key: string]: unknown } : T,
   options?: ClassTransformOptions & { raw?: boolean },
-): T;
-export function transformer<T, V extends { new (...args: unknown[]): T }>(
+): InstanceType<V>;
+export function transformer<V extends { new (...args: unknown[]): unknown },
+T extends ConstructorParameters<V>[0]>(
   cls: V,
-  obj: ConstructorParameters<V>[0] extends undefined ? unknown : ConstructorParameters<V>[0][],
+  obj: T extends undefined ? Array<unknown> : T[],
   options?: ClassTransformOptions & { raw?: boolean },
-): T[];
-export function transformer<T, V extends { new (
-  ...args: unknown[]): T }>(
+): InstanceType<V>[];
+export function transformer<V extends { new (
+  ...args: unknown[]): unknown }, T extends ConstructorParameters<V>[0]>(
   cls: V,
-  obj: ConstructorParameters<V>[0] extends undefined ? unknown : (ConstructorParameters<V>[0] | ConstructorParameters<V>[0][]),
+  obj: T extends undefined ? unknown : (T | T[]),
   options?: ClassTransformOptions & { raw?: boolean },
 ) {
   const result = plainToInstance(cls, options?.raw ? obj : circularToJSON(obj), {
