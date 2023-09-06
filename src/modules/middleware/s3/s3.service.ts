@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { AwsConfigService } from '@config/aws/config.provider';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { generateRandomString, isEmpty } from '@utils/helper';
+import { generateRandomString } from '@utils/helper';
 import { S3 } from 'aws-sdk';
 import {
   CopyObjectRequest, DeleteObjectRequest, ManagedUpload, PutObjectRequest,
@@ -270,7 +270,7 @@ export class S3Service {
 
   async uploadAndOrRepleaceFile(data: UploadAndOrReplaceRequest) {
     try {
-      if (!isEmpty(data.oldFileName)) {
+      if (!data.oldFileName) {
         await this.removeFile(data.oldFileName, data.relativePath);
       }
 

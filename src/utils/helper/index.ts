@@ -1,30 +1,31 @@
 import { UnprocessableEntityException } from '@nestjs/common';
 import { ClassTransformOptions, plainToInstance } from 'class-transformer';
 import { FOLDER_COMMON, IMAGE_MIME, IMAGE_URL } from '@utils/constant';
-import * as moment from 'moment';
 
 export const circularToJSON = (circular: unknown) => JSON.parse(JSON.stringify(circular));
 
 /**
- * `options.raw` = `true` for using pure object that you provided.
- * `options.raw` = `false` | `undefined` for coverting circular structure to JSON
- * @param cls
- * @param obj
- * @param options
+ * A description of the entire function.
+ *
+ * @param {V} cls - The class to be transformed.
+ * @param {ConstructorParameters<V>[0]} obj - The object to be transformed.
+ * @param {ClassTransformOptions & { raw?: boolean }} options - The transformation options (optional).
+ * @return {T} The transformed object.
  */
-export function transformer<T, V>(
-  cls: { new (...args: unknown[]): T },
-  obj: V[],
-  options?: ClassTransformOptions & { raw?: boolean },
-): T[];
-export function transformer<T, V>(
-  cls: { new (...args: unknown[]): T },
-  obj: V,
+export function transformer<T, V extends { new (...args: unknown[]): T }>(
+  cls: V,
+  obj: ConstructorParameters<V>[0] extends undefined ? unknown : ConstructorParameters<V>[0],
   options?: ClassTransformOptions & { raw?: boolean },
 ): T;
-export function transformer<T, V>(
-  cls: { new (...args: unknown[]): T },
-  obj: V | V[],
+export function transformer<T, V extends { new (...args: unknown[]): T }>(
+  cls: V,
+  obj: ConstructorParameters<V>[0] extends undefined ? unknown : ConstructorParameters<V>[0][],
+  options?: ClassTransformOptions & { raw?: boolean },
+): T[];
+export function transformer<T, V extends { new (
+  ...args: unknown[]): T }>(
+  cls: V,
+  obj: ConstructorParameters<V>[0] extends undefined ? unknown : (ConstructorParameters<V>[0] | ConstructorParameters<V>[0][]),
   options?: ClassTransformOptions & { raw?: boolean },
 ) {
   const result = plainToInstance(cls, options?.raw ? obj : circularToJSON(obj), {
@@ -35,6 +36,18 @@ export function transformer<T, V>(
     ...options,
   });
   return result as unknown;
+}
+
+/**
+ * Generates a slug based on the given reference string.
+ *
+ * @param {string} reference - The reference string to generate the slug from.
+ * @return {string} The generated slug.
+ */
+export function slugGenerator(reference: string): string {
+  const randomCode = (Math.random() + 1).toString(16).substring(2);
+
+  return reference.replaceAll(/[\W\\_]/g, '-').toLocaleLowerCase().concat(`-${randomCode}`);
 }
 
 export const imageFileFilter = (req, file, callback) => {
@@ -86,20 +99,3 @@ export const generateRandomString = (length: number): string => {
 
   return result;
 };
-
-// eslint-disable-next-line max-len
-export const dateNow = (date?: moment.MomentInput, format?: string) => (date ? moment(date, format) : moment());
-
-export function isEmpty(data: any = null): boolean {
-  let result = false;
-  if (typeof data === 'object') {
-    if (JSON.stringify(data) === '{}' || JSON.stringify(data) === '[]') { result = true; }
-    if (!data) result = true;
-  } else if (typeof data === 'string') {
-    if (!data.trim()) result = true;
-  } else if (typeof data === 'undefined') {
-    result = true;
-  }
-
-  return result;
-}
