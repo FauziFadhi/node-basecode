@@ -240,7 +240,7 @@ export class S3Service {
 
   async uploadAndOrRepleaceFile(data: UploadAndOrReplaceRequest) {
     try {
-      if (!data.oldFileName) {
+      if (data.oldFileName) {
         await this.removeFile(data.oldFileName, data.relativePath);
       }
 
