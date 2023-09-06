@@ -12,9 +12,9 @@ export const circularToJSON = (circular: unknown) => circular && JSON.parse(JSON
  * @return {type} the transformed instance of the class
  */
 export function transformer<V extends { new (...args: unknown[]): unknown },
-    T extends ConstructorParameters<V>[0]>(
+      T extends ConstructorParameters<V>[0]>(
   cls: V,
-  obj: T extends undefined ? { [key: string]: unknown } : T,
+  obj: T extends undefined ? unknown : T,
   options?: ClassTransformOptions & { raw?: boolean },
 ): InstanceType<V>;
 export function transformer<V extends { new (...args: unknown[]): unknown },
@@ -26,7 +26,7 @@ T extends ConstructorParameters<V>[0]>(
 export function transformer<V extends { new (
   ...args: unknown[]): unknown }, T extends ConstructorParameters<V>[0]>(
   cls: V,
-  obj: T extends undefined ? unknown : (T | T[]),
+  obj: T extends undefined ? unknown | Array<unknown> : (T | T[]),
   options?: ClassTransformOptions & { raw?: boolean },
 ) {
   const result = plainToInstance(cls, options?.raw ? obj : circularToJSON(obj), {
