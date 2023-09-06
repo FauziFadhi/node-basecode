@@ -1,22 +1,20 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import config from './config';
-import schema from './schema';
 
-export async function getModuleEnv<T>(configModule: T): Promise<T> {
-  await ConfigModule.envVariablesLoaded;
-  return configModule;
-}
+import config from './config';
+import { AwsConfigService } from './config.provider';
+import schema from './schema';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
       load: [config],
       expandVariables: true,
       validationSchema: schema,
     }),
   ],
-  providers: [],
+  providers: [AwsConfigService],
+  exports: [AwsConfigService],
 })
-export class AppConfigModule {
-}
+export class AwsConfigModule { }

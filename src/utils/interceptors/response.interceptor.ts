@@ -1,4 +1,3 @@
-import { AppConfigModule } from '@config/app/config.module';
 import {
   CallHandler, ExecutionContext, Injectable, NestInterceptor,
 } from '@nestjs/common';
@@ -6,17 +5,10 @@ import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Resource } from '../base-class/base.resource';
 import { ResponsePaginationInterceptor } from './list-response.interceptor';
 
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
-  serializeName: Resource;
-
-  constructor(serializeName: Resource) {
-    this.serializeName = serializeName;
-  }
-
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const reflector = new Reflector();
 
@@ -40,15 +32,12 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
 
     return next.handle().pipe(
       map((data: Record<string, unknown>) => {
-        const meta = data?.meta;
+        const { meta, ...result } = data;
 
-        if (meta) {
-          const obj = data;
-          delete obj.meta;
-        }
-
-        const baseResource = AppConfigModule.BaseResouce;
-        return baseResource.serialize(this.serializeName, data);
+        return {
+          meta,
+          data: result,
+        };
       }),
     );
   }

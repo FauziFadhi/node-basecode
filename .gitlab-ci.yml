@@ -1,0 +1,105 @@
+image: node:18-buster-slim
+
+variables:
+  DOCKER_TLS_CERTDIR: "/certs"
+  PROJECT: "rnd"
+  REGISTRY: "104943189603.dkr.ecr.ap-southeast-1.amazonaws.com/${PROJECT}"
+
+workflow:
+  rules:
+    - if: $CI_OPEN_MERGE_REQUESTS
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_MERGE_REQUEST_IID
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == "V10-rc1-x1" || $CI_COMMIT_BRANCH == "V10-rc1-x2"
+
+cache:
+  key:
+    files:
+      - package.json
+      - package-lock.json
+  paths:
+    - node_modules/
+
+.ssh-gitlab-before-script: &ssh-gitlab-before-script
+  - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+
+stages:
+  - install
+  - test
+  - build
+  - deploy
+
+default:
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+
+npm_install:
+  stage: install
+  script:
+    - npm install
+
+build:
+  stage: build
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - dist
+    expire_in: 1h
+  needs: ["npm_install"]
+
+build_image:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:v1.9.1-debug
+    entrypoint: [""]
+  variables:
+    TAG_NAME: "node-basecode-$CI_COMMIT_REF_NAME"
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
+    - /kaniko/executor
+      --context "$CI_PROJECT_DIR"
+      --dockerfile "$CI_PROJECT_DIR/Dockerfile"
+      --label "com.rollingglory.image.title=$CI_PROJECT_TITLE"
+      --label "com.rollingglory.image.title=$CI_PROJECT_TITLE"
+      --label "com.rollingglory.image.url=$CI_PROJECT_URL"
+      --label "com.rollingglory.image.created=$CI_JOB_STARTED_AT"
+      --label "com.rollingglory.image.revision=$CI_COMMIT_SHA"
+      --label "com.rollingglory.image.version=$CI_COMMIT_REF_NAME"
+      --destination "$REGISTRY:$TAG_NAME"
+      --destination "$REGISTRY:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA"
+      --cache=true
+      --cache-ttl 2h
+      --cleanup
+  needs: ["build"]
+  only:
+    - V10-rc1-x1
+    - V10-rc1-x2
+
+deploy:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  environment:
+    name: Dev
+    url: https://api-replica-eusupa.dev.rollingglory.com
+  before_script:
+    - *ssh-gitlab-before-script
+    - ssh-keyscan $SSH_DEV_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - ssh $SSH_DEV_USER@$SSH_DEV_HOST "cd /home/deploy/rnd/V10-rc1-x2 && ./deploy.sh $CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA"
+  cache: []
+  needs: ["build_image"]
+  only:
+    - V10-rc1-x1
+    - V10-rc1-x2

@@ -22,7 +22,6 @@ export class RoleController {
   }
 
   @Post()
-  @UseInterceptors(new ResponseInterceptor('role'))
   async createUser(@Body() body: CreateRoleReq) {
     const user = await this.roleService.create(body);
 

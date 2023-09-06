@@ -1,12 +1,9 @@
-import { AppConfigModule } from '@config/app/config.module';
 import {
   CallHandler, ExecutionContext, Injectable, NestInterceptor,
 } from '@nestjs/common';
 import { FastifyRequest } from 'fastify';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-import { Resource } from '../base-class/base.resource';
 
 type Meta = {
   currentRecordCount: number;
@@ -20,12 +17,6 @@ type Meta = {
 @Injectable()
 export class ResponsePaginationInterceptor<T>
 implements NestInterceptor<T, any> {
-  serializeName: Resource;
-
-  constructor(serializeName: Resource) {
-    this.serializeName = serializeName;
-  }
-
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map((response) => {
@@ -35,23 +26,14 @@ implements NestInterceptor<T, any> {
             size: string,
           }
         }> = context.switchToHttp().getRequest();
-        const meta = this.meta({
-          count: response.count,
-          rowsLength: response.rows.length,
-          additionalMeta: response.additionalMeta,
-        }, request.query);
 
-        // make to json serialize
-        const baseResource = AppConfigModule.BaseResouce;
-        const resource = baseResource.serialize(this.serializeName, response.rows);
         return {
-          ...resource,
-          meta,
-          // links: this.links(meta, {
-          //   url: request.url,
-          //   page: request.query.page,
-          //   hostname: request.headers.hostname || '',
-          // }),
+          data: response.rows,
+          meta: this.meta({
+            count: response.count,
+            rowsLength: response.rows.length,
+            additionalMeta: response.additionalMeta,
+          }, request.query),
         };
       }),
     );

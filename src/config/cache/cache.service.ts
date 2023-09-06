@@ -1,7 +1,7 @@
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
-import * as crypto from 'crypto';
+import { Inject, Injectable } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { h64 } from 'xxhashjs';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class CacheService {

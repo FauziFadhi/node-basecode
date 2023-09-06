@@ -5,9 +5,8 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import * as CONST from '@utils/constant';
 import * as fs from 'fs';
-import { AuthProvider } from 'modules/_common/auth/provider.service';
+import { AuthProvider } from '@_common/auth/provider.service';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Op } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 
 import { ILoggedUser } from '../interface/logged-user.interface';

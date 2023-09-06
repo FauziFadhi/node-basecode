@@ -10,15 +10,19 @@ import { install } from 'source-map-support';
 
 import { satisfies } from 'semver';
 import * as qs from 'qs';
+import * as fastifyMulter from 'fastify-multer';
 import { engines } from '../package.json';
 
 import { AppModule } from './app.module';
+import { GlobalCustomResponseInterceptor } from '@utils/interceptors/global-response.interceptor';
 
 async function bootstrap() {
   install();
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
     querystringParser: (str: string) => qs.parse(str),
   }));
+
+  app.register(fastifyMulter.contentParser as any);
 
   app.useGlobalPipes(new CustomValidationPipe({
     whitelist: true,
@@ -35,6 +39,7 @@ async function bootstrap() {
   });
 
   app.setGlobalPrefix('api');
+  app.useGlobalInterceptors(new GlobalCustomResponseInterceptor());
 
   const config = new DocumentBuilder()
     .setTitle('Apps')

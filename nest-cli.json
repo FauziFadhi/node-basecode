@@ -10,9 +10,7 @@
         "options": {
           "introspectComments": true,
           "classValidatorShim": true,
-          "controllerFileNameSuffix": [
-            ".controller.ts"
-          ],
+          "controllerFileNameSuffix": [".controller.ts"],
           "dtoFileNameSuffix": [
             ".viewmodel.ts",
             ".request.ts",
