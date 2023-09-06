@@ -2,21 +2,38 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { AwsConfigService } from '@config/aws/config.provider';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { generateRandomString, isEmpty } from '@utils/helper';
+import { generateRandomString } from '@utils/helper';
 import { S3 } from 'aws-sdk';
-import {
-  CopyObjectRequest, DeleteObjectRequest, ManagedUpload, PutObjectRequest,
-} from 'aws-sdk/clients/s3';
+// import {
+//   // CopyObjectRequest,
+//   // DeleteObjectRequest,
+//   // ManagedUpload,
+//   // PutObjectRequest,
+// } from 'aws-sdk/clients/s3';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as moment from 'moment';
 import { extname } from 'path';
+import { fromInstanceMetadata } from '@aws-sdk/credential-providers';
+import {
+  CopyObjectCommand,
+  CopyObjectCommandInput,
+  DeleteObjectCommand,
+  DeleteObjectCommandInput,
+  GetObjectCommand,
+  GetObjectCommandInput,
+  PutObjectCommand,
+  PutObjectCommandInput,
+  PutObjectCommandOutput,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { UploadAndOrReplaceRequest, UploadRequest } from './interface/upload.interface';
 
 @Injectable()
 export class S3Service {
   bucket: string;
 
-  s3: S3;
+  s3: S3Client;
 
   constructor(
     private readonly awsConfigService: AwsConfigService,
@@ -26,11 +43,19 @@ export class S3Service {
   }
 
   private setup() {
-    return new S3({
+    return new S3Client({
       // credentials: {
       //   accessKeyId: this.awsConfigService.accessKeyId,
       //   secretAccessKey: this.awsConfigService.secretAccessKey,
       // },
+      credentials: fromInstanceMetadata({
+        // Optional. The connection timeout (in milliseconds) to apply to any remote requests.
+        // If not specified, a default value of `1000` (one second) is used.
+        timeout: 5000,
+        // Optional. The maximum number of times any HTTP connections should be retried. If not
+        // specified, a default value of `0` will be used.
+        maxRetries: 0,
+      }),
       region: this.awsConfigService.defaultRegion,
     });
   }
@@ -41,35 +66,30 @@ export class S3Service {
    * @returns
    */
   async moveFile(
+    // eslint-disable-next-line max-len
     { filename: oldFilename, relativePath: oldRelativePath }: { filename: string, relativePath: string },
     { relativePath: newRelativePath }: { relativePath: string },
   ): Promise<S3.Types.CopyObjectOutput> {
     const oldFileUrl = `${this.bucket}/${this.getFullPath(oldFilename, oldRelativePath)}`;
     const newFileFullpath = this.getFullPath(oldFilename, newRelativePath);
-    const params: CopyObjectRequest = {
+    const params: CopyObjectCommandInput = {
       Bucket: this.bucket,
       ACL: 'public-read',
       CopySource: oldFileUrl,
       Key: newFileFullpath,
     };
 
-    const copyFile = await this.s3.copyObject(params)
-      .promise()
-      .catch((e) => {
-        // Log.createError({
-        //   detail: '',
-        //   title: 'ERROR Move File',
-        //   reference: e?.response?.data || e?.response,
-        //   statusCode: '500',
-        //   request: params,
-        //   code: 'AWS500',
-        // });
-        throw new InternalServerErrorException('Failed to move file at s3.');
-      });
+    try {
+      const command = new CopyObjectCommand(params);
 
-    this.removeFile(oldFilename, oldRelativePath);
+      const copyFile = await this.s3.send(command);
 
-    return copyFile;
+      this.removeFile(oldFilename, oldRelativePath);
+      // process data.
+      return copyFile;
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to move file at s3.');
+    }
   }
 
   async signedUrl(filename: string, relativePath?: string): Promise<{
@@ -77,61 +97,25 @@ export class S3Service {
     expireIn: any
   }> {
     const expireTime = 43200 as any; // 12 hours
-    const params: PutObjectRequest = {
+    const params: GetObjectCommandInput = {
       Bucket: this.bucket,
       Key: this.getFullPath(filename, relativePath),
-      Expires: expireTime,
     };
 
-    const url = await this.s3.getSignedUrl('getObject', params);
-    return {
-      url,
-      expireIn: expireTime,
-    };
-  }
-
-  async signedUrlWithNotFound(filename: string, relativePath?: string, expireTime = 60): Promise<{
-    url: string | any,
-    expireIn: any
-  }> {
     try {
-      const params = {
-        Bucket: this.bucket,
-        Key: this.getFullPath(filename, relativePath),
-        Expires: expireTime,
-      };
-
-      await this.s3.headObject({
-        Bucket: this.bucket,
-        Key: this.getFullPath(filename, relativePath),
-      }).promise();
-
-      const url = await this.s3.getSignedUrl('getObject', params);
+      const command = new GetObjectCommand(params);
+      const url = await getSignedUrl(this.s3, command, { expiresIn: expireTime });
       return {
         url,
         expireIn: expireTime,
       };
     } catch (error) {
-      if (error.name === 'NotFound') { // Note with v3 AWS-SDK use error.code
-        // return null;
-        return { url: null, expireIn: null };
-      }
-
-      // Log.createError({
-      //   detail: '',
-      //   title: 'ERROR Get File',
-      //   reference: error?.response?.data || error?.response,
-      //   statusCode: '500',
-      //   request: filename,
-      //   code: 'AWS500',
-      // });
-
-      throw new InternalServerErrorException('Error Get File');
+      throw new InternalServerErrorException('Failed to get signed url from s3.');
     }
   }
 
   private async uploadObject(file: Express.Multer.File, fullPath: string, acl: string = 'public-read') {
-    const params: PutObjectRequest = {
+    const params: PutObjectCommandInput = {
       Bucket: this.bucket,
       Key: fullPath,
       ContentType: file.mimetype,
@@ -140,18 +124,16 @@ export class S3Service {
       // CacheControl: 'max-age=60',
     };
 
-    return this.s3.upload(params).promise()
-      .catch((e) => {
-        // Log.createError({
-        //   detail: '',
-        //   title: 'ERROR Upload File',
-        //   reference: e?.response?.data,
-        //   statusCode: '500',
-        //   request: params,
-        //   code: 'AWS500',
-        // });
-        throw new InternalServerErrorException('Failed to upload to s3.');
-      });
+    try {
+      const command = new PutObjectCommand(params);
+      const upload = await this.s3.send(command);
+      return {
+        ...upload,
+        Location: `https://${this.bucket}.s3.${this.awsConfigService.defaultRegion}.amazonaws.com/${fullPath}`,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException('Failed upload to s3.');
+    }
   }
 
   /**
@@ -159,17 +141,22 @@ export class S3Service {
    * @param fileName
    */
   private async removeObject(fullPath: string) {
-    const params: DeleteObjectRequest = {
+    const params: DeleteObjectCommandInput = {
       Bucket: this.bucket,
       Key: fullPath,
     };
 
-    return this.s3.deleteObject(params).promise();
+    try {
+      const command = new DeleteObjectCommand(params);
+      return await this.s3.send(command);
+    } catch (error) {
+      throw new InternalServerErrorException('Failed delete object from s3.');
+    }
   }
 
   getFileName(file: Express.Multer.File, baseName?: string): string {
     const fileExt = extname(file.originalname);
-    const dateFileName = moment().format('YYYYMMDDHHmmss');
+    const dateFileName = moment().format('yyyyMMddHHmmss');
     const randomString = generateRandomString(10);
     const newFileName = `${dateFileName}${randomString}`;
 
@@ -188,7 +175,7 @@ export class S3Service {
    * @param req
    * @returns
    */
-  async uploadFile(req: UploadRequest, acl: string = 'public-read'): Promise<ManagedUpload.SendData & { fileName: string }> {
+  async uploadFile(req: UploadRequest, acl: string = 'public-read'): Promise<PutObjectCommandOutput & { fileName: string }> {
     const fileName = this.getFileName(req.file, req.baseName);
     const fullPath = this.getFullPath(fileName, req.relativePath);
     const uploaded = await this.uploadObject(req.file, fullPath, acl);
@@ -199,7 +186,7 @@ export class S3Service {
     };
   }
 
-  async uploadFileInvoice(req: UploadRequest, acl: string = 'public-read'): Promise<ManagedUpload.SendData & { fileName: string }> {
+  async uploadFileInvoice(req: UploadRequest, acl: string = 'public-read'): Promise<PutObjectCommandOutput & { fileName: string }> {
     const fileName = req.file.filename;
     const fullPath = this.getFullPath(fileName, req.relativePath);
     const uploaded = await this.uploadObject(req.file, fullPath, acl);
@@ -240,7 +227,8 @@ export class S3Service {
    * @param oldFile
    * @returns
    */
-  async replaceFile(newFile: UploadRequest, oldFile: { relativePath: string, fileName: string }): Promise<ManagedUpload.SendData & { fileName: string }> {
+  // eslint-disable-next-line max-len
+  async replaceFile(newFile: UploadRequest, oldFile: { relativePath: string, fileName: string }): Promise<PutObjectCommandOutput & { fileName: string }> {
     await this.removeFile(oldFile.fileName, oldFile.relativePath);
 
     return this.uploadFile({
@@ -250,27 +238,9 @@ export class S3Service {
     });
   }
 
-  /**
-   * get stream file from S3
-   * @param path
-   * @returns Stream object
-   */
-  async streamObject(path: string) {
-    try {
-      const params: DeleteObjectRequest = {
-        Bucket: this.bucket,
-        Key: path,
-      };
-
-      return this.s3.getObject(params).createReadStream();
-    } catch (error) {
-      throw new Error(error);
-    }
-  }
-
   async uploadAndOrRepleaceFile(data: UploadAndOrReplaceRequest) {
     try {
-      if (!isEmpty(data.oldFileName)) {
+      if (!data.oldFileName) {
         await this.removeFile(data.oldFileName, data.relativePath);
       }
 

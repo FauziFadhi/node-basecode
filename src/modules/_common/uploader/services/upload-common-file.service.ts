@@ -1,8 +1,8 @@
 /* eslint-disable max-len */
 import { S3Service } from '@middleware/s3/s3.service';
 import { Injectable } from '@nestjs/common';
-import { dateNow, generateRandomString } from '@utils/helper';
 import { extname } from 'path';
+import { DateTime } from 'luxon';
 import { IBaseUploadRsp } from '../interfaces/base-upload.interface';
 import { ImageUploaderRequest } from '../requests/uploader.request';
 
@@ -17,11 +17,11 @@ export class CommonUploaderService {
 
     const pathUpload = temporaryUpload ? `/temp/${body.type}` : body.type;
     const fileExt = extname(imageFile.originalname);
-    const thisTime = dateNow().format('YYYYMMDDHHmmss');
+    const thisTime = DateTime.now().toFormat('yyyyMMddHHmmss');
     // const randomString = generateRandomString(10);
     const randomString = 'X1';
     const newFileName = `${thisTime}${randomString}${fileExt}`;
-    // const thisTime = createHash(dateNow().format('YYYYMMDDHHmmss'));
+    // const thisTime = createHash(dateNow().format('yyyyMMddHHmmss'));
     // const randomKey = generateRandomNumber();
     // const newFileName = `${thisTime}-${randomKey}${extname(imageFile.originalname)}`;
 
