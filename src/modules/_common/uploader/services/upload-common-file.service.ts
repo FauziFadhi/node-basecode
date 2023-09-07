@@ -17,11 +17,11 @@ export class CommonUploaderService {
 
     const pathUpload = temporaryUpload ? `/temp/${body.type}` : body.type;
     const fileExt = extname(imageFile.originalname);
-    const thisTime = DateTime.now().toFormat('YYYYMMDDHHmmss');
+    const thisTime = DateTime.now().toFormat('yyyyMMddHHmmss');
     // const randomString = generateRandomString(10);
     const randomString = 'X1';
     const newFileName = `${thisTime}${randomString}${fileExt}`;
-    // const thisTime = createHash(dateNow().format('YYYYMMDDHHmmss'));
+    // const thisTime = createHash(dateNow().format('yyyyMMddHHmmss'));
     // const randomKey = generateRandomNumber();
     // const newFileName = `${thisTime}-${randomKey}${extname(imageFile.originalname)}`;
 
