@@ -10,14 +10,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { User as LoggedUser } from '@utils/decorators';
+import { User as LoggedUser, CacheEndpoint } from '@utils/decorators';
 import { transformer } from '@utils/helper';
 
 import { ILoggedUser } from '@apps/auth/interface/logged-user.interface';
 import { ApiTags } from '@nestjs/swagger';
-import { CacheTTL } from '@nestjs/cache-manager';
-import { UserCacheCdnType } from '@utils/enum/user-cache-cdn-type.enum';
-import { CacheEndpoint } from '@utils/decorators/cache';
 import { UserVm } from './viewmodel/user.viewmodel';
 import { UserService } from '../service/user.service';
 import { CreateUserReq } from './request/create-user.request';
