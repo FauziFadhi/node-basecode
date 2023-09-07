@@ -41,8 +41,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
     || exception?.message
     || exception;
 
-    this.logger.error(errorMessage, stack, 'ALLEXCEPTION FILTER');
-
     const meta = {
       path: url,
       method: request.method,
@@ -59,7 +57,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         code: errorCode,
         status: `${status}`,
         meta: index === 0 && meta,
-        detail: errmsg.message,
+        detail: this.getMessage(exception) || errmsg.message,
       }));
 
       errorDefault = error;
@@ -68,8 +66,35 @@ export class AllExceptionsFilter implements ExceptionFilter {
         code: errorCode,
         status: `${status}`,
         meta,
-        detail: errorMessage,
+        detail: this.getMessage(exception) || errorMessage,
       };
+    }
+
+    if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
+      this.logger.error('UNHANDLED ERROR', {
+        stack,
+        request: {
+          body: request.body,
+          headers: request.headers,
+          query: request.query,
+          params: request.params,
+        },
+        errors: errorDefault,
+        cause: exception?.cause || errorMessage,
+        message: exception?.message,
+      }, 'EXCEPTION');
+    } else {
+      this.logger.error({
+        request: {
+          body: request.body,
+          headers: request.headers,
+          query: request.query,
+          params: request.params,
+        },
+        cause: exception?.cause || errorMessage,
+        errors: errorDefault,
+        message: errorMessage,
+      }, stack, 'EXCEPTION');
     }
 
     response.status(status).send(Serializer.serializeError(errorDefault));
@@ -83,5 +108,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
     return exception instanceof HttpException || exception?.getStatus?.()
       ? +exception.getStatus()
       : HttpStatus.INTERNAL_SERVER_ERROR;
+  }
+
+  private getMessage(exception: HttpException | any) {
+    // eslint-disable-next-line no-nested-ternary
+    return exception instanceof HttpException || exception?.getStatus?.()
+      ? null
+      : process.env.ENV === 'development' ? null : 'Terjadi kesalahan pada server.';
   }
 }
