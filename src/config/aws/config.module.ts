@@ -8,10 +8,12 @@ import schema from './schema';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
       load: [config],
-      expandVariables: true,
       validationSchema: schema,
+      validate(con) {
+        return con;
+      },
+      envFilePath: [`.env.${process.env.DB_ENV}`, '.env'],
     }),
   ],
   providers: [AwsConfigService],

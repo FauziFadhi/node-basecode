@@ -1,5 +1,7 @@
 import { registerAs } from '@nestjs/config';
 import { join } from 'path';
+import { Dialect } from 'sequelize';
+import { SequelizeOptions } from 'sequelize-typescript';
 
 export default registerAs('database', () => ({
   connection: process.env.DB_CONNECTION,
@@ -15,9 +17,22 @@ export default registerAs('database', () => ({
   readPassword: process.env.DB_READ_PASSWORD,
 }));
 
-export function configMapping(dbConfig) {
+type DBConfig = {
+  connection: Dialect | string,
+  readName: string,
+  readUsername: string,
+  readPassword: string,
+  readHost: string,
+  readPort: number | string,
+  name: string,
+  username: string,
+  host: string,
+  password: string,
+  port: number | string,
+};
+export function configMapping(dbConfig: DBConfig): SequelizeOptions {
   return {
-    dialect: dbConfig.connection,
+    dialect: dbConfig.connection as Dialect,
     logging: false,
     logQueryParameters: false,
     define: {
@@ -43,7 +58,7 @@ export function configMapping(dbConfig) {
     },
     pool: {
       min: 0,
-      max: 30,
+      max: 100,
     },
     dialectOptions: {
       // decimalNumbers: true,
@@ -51,6 +66,5 @@ export function configMapping(dbConfig) {
     },
     // timezone: '+07:00',
     models: [join(__dirname, '../../models/core')],
-    synchronize: false,
   };
 }

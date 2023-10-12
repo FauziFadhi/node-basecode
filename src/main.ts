@@ -11,12 +11,20 @@ import { install } from 'source-map-support';
 import { satisfies } from 'semver';
 import * as qs from 'qs';
 import * as fastifyMulter from 'fastify-multer';
-import { engines } from '../package.json';
+import { GlobalCustomResponseInterceptor } from '@utils/interceptors/global-response.interceptor';
+import { engines, version } from '../package.json';
 
 import { AppModule } from './app.module';
-import { GlobalCustomResponseInterceptor } from '@utils/interceptors/global-response.interceptor';
+
+export const projectVersion = version;
 
 async function bootstrap() {
+  const nodeVersion = engines.node;
+  if (!satisfies(process.version, nodeVersion)) {
+    console.log(`Required node version ${nodeVersion} not satisfied with current version ${process.version}.`);
+    process.exit(0);
+  }
+
   install();
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
     querystringParser: (str: string) => qs.parse(str),
@@ -56,12 +64,6 @@ async function bootstrap() {
     allowedHeaders: '*',
     credentials: false,
   });
-
-  const version = engines.node;
-  if (!satisfies(process.version, version)) {
-    console.log(`Required node version ${version} not satisfied with current version ${process.version}.`);
-    process.exit(1);
-  }
 
   const configService = app.get(ConfigService);
   const appPort = configService.get<number>('app.port');

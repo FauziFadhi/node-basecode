@@ -16,13 +16,7 @@ import schema from './schema';
       validationSchema: schema,
       envFilePath: [`.env.${process.env.CACHE_ENV}`, '.env'],
       validate(con) {
-        return {
-          CACHE_HOST: con.CACHE_HOST,
-          CACHE_PORT: con.CACHE_PORT,
-          CACHE_TTL: con.CACHE_TTL,
-          CACHE_PREFIX: con.CACHE_PREFIX,
-          CACHE_PASSWORD: con.CACHE_PASSWORD,
-        };
+        return con;
       },
     })),
     CacheModule.registerAsync({
