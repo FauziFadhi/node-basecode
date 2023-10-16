@@ -12,11 +12,9 @@ import {
 import { imageFileFilter } from '@utils/helper';
 import { ResponseInterceptor } from '@utils/interceptors';
 import { FastifyFileInterceptor } from '@utils/interceptors/fastify-file.interceptor';
-import { FastifyFilesInterceptor } from '@utils/interceptors/fastify-files.interceptor';
 import { FastifyFileFieldsInterceptor } from '@utils/interceptors/fastify-file-field.interceptor';
 import { ImageUploaderRequest } from '../requests/uploader.request';
 
-import { EnumUploadType } from '../interfaces/base-upload.interface';
 import { CommonUploaderService } from '../services/upload-common-file.service';
 
 @Controller({ path: 'uploader', version: '1' })
@@ -47,19 +45,21 @@ export class UploadController {
 
   @Post('uploadx')
   @UseInterceptors(
-    FastifyFileFieldsInterceptor([
+    FastifyFileFieldsInterceptor(
+      [
+        {
+          name: 'file',
+          maxCount: 1,
+        },
+        {
+          name: 'files',
+          maxCount: 3,
+        },
+      ],
       {
-        name: 'file',
-        maxCount: 1,
+        fileFilter: imageFileFilter,
       },
-      {
-        name: 'files',
-        maxCount: 3,
-      },
-    ],
-    {
-      fileFilter: imageFileFilter,
-    }),
+    ),
   )
   uploadFilex(@UploadedFiles() { file, files } : { file: Express.Multer.File, files: Express.Multer.File[] }) {
     console.log(file);

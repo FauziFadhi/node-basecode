@@ -27,25 +27,17 @@ export class CommonUploaderService {
 
     // const uploadPromise = this.s3Service.uploadFile({ file: imageFile, relativePath: pathUpload });
 
-    const uploadPromise = this.s3Service.uploadAndOrRepleaceFile({
+    const upload = await this.s3Service.uploadAndOrRepleaceFile({
       file: imageFile,
       fileName: newFileName,
       relativePath: pathUpload,
       oldFileName: body.oldImageName,
     });
 
-    const upload = await uploadPromise;
-
     return {
       fileName: upload.fileName,
       type: body.type,
       url: upload.Location,
     };
-
-    // return {
-    //   fileName: newFileName,
-    //   type: body.type,
-    //   url: pathUpload,
-    // };
   }
 }

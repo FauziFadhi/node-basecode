@@ -47,10 +47,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
     };
 
-    let errorDefault: JSONAPISerializer.ErrorObject;
-
-    if (typeof errorMessage === 'object' && errorMessage.length) {
-      const error = errorMessage.map((errmsg, index: number) => ({
+    const errorDefault: JSONAPISerializer.ErrorObject = (typeof errorMessage === 'object' && errorMessage.length)
+      ? errorMessage.map((errmsg, index: number) => ({
         source: errorCode === VALIDATION_CODE ? {
           pointer: errmsg.field,
         } : undefined,
@@ -58,17 +56,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
         status: `${status}`,
         meta: index === 0 && meta,
         detail: this.getMessage(exception) || errmsg.message,
-      }));
-
-      errorDefault = error;
-    } else {
-      errorDefault = {
+      }))
+      : {
         code: errorCode,
         status: `${status}`,
         meta,
         detail: this.getMessage(exception) || errorMessage,
       };
-    }
 
     if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger.error('UNHANDLED ERROR', {
@@ -100,10 +94,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
     response.status(status).send(Serializer.serializeError(errorDefault));
   }
 
-  private httpExceptionHandling(exception: HttpException) {
-
-  }
-
   private getStatus(exception: HttpException | any) {
     return exception instanceof HttpException || exception?.getStatus?.()
       ? +exception.getStatus()
@@ -114,6 +104,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
     // eslint-disable-next-line no-nested-ternary
     return exception instanceof HttpException || exception?.getStatus?.()
       ? null
-      : process.env.ENV === 'development' ? null : 'Terjadi kesalahan pada server.';
+      : ['development', 'local'].includes(process.env.ENV || '') ? null : 'Terjadi kesalahan pada server.';
   }
 }

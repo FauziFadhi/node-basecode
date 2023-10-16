@@ -1,12 +1,9 @@
 import { Global, Logger, Module } from '@nestjs/common';
 
-import { AuthCommonModule } from './auth/auth.module';
-import { UploaderModule } from './uploader/uploader.module';
-
 @Global()
 @Module({
-  imports: [UploaderModule, AuthCommonModule],
+  imports: [],
   providers: [Logger],
-  exports: [UploaderModule, AuthCommonModule, Logger],
+  exports: [Logger],
 })
 export class CommonModule {}
