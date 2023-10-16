@@ -39,6 +39,7 @@
     "@nestjs/sequelize": "^10.0.0",
     "@nestjs/swagger": "^7.1.13",
     "aws-sdk": "^2.1472.0",
+    "axios": "^1.5.1",
     "base-repo": "^3.1.10",
     "bcrypt": "^5.1.1",
     "cache-manager": "^4.1.0",
@@ -53,6 +54,7 @@
     "luxon": "^3.4.3",
     "moment": "^2.29.4",
     "nestjs-cls": "^3.5.1",
+    "opossum": "^8.1.2",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
@@ -64,6 +66,7 @@
     "sequelize-typescript": "^2.1.5",
     "source-map-support": "^0.5.21",
     "umzug": "^3.3.1",
+    "url-join": "^4.0.1",
     "xxhashjs": "^0.2.2"
   },
   "devDependencies": {
@@ -80,6 +83,7 @@
     "@types/luxon": "^3.3.2",
     "@types/multer": "^1.4.8",
     "@types/node": "^18.18.4",
+    "@types/opossum": "^8.1.4",
     "@types/passport-jwt": "^3.0.10",
     "@types/passport-local": "^1.0.36",
     "@types/sequelize": "^4.28.16",
