@@ -3,12 +3,11 @@ import { UserLogin } from '@models/core/UserLogin';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import * as CONST from '@utils/constant';
-import * as fs from 'fs';
+import { AUTH } from '@utils/constant';
 import { AuthProvider } from '@_common/auth/provider.service';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Sequelize } from 'sequelize-typescript';
 
+import { readFileSync } from 'fs';
 import { ILoggedUser } from '../interface/logged-user.interface';
 import { ILoginPayload } from '../interface/login.interface';
 
@@ -18,15 +17,14 @@ export class AuthJwtStrategy extends PassportStrategy(Strategy, 'auth') {
     private readonly authProvider: AuthProvider,
     private readonly authConfig: AuthConfigService,
     private readonly configService: ConfigService,
-    private readonly sequelize: Sequelize,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       algorithms: authConfig.algorithm,
-      audience: authProvider.encrypt(CONST.AUTH.AUDIENCE_APP),
+      audience: authProvider.encrypt(AUTH.AUDIENCE_APP),
       issuer: configService.get('app.name'),
-      secretOrKey: fs.readFileSync(`${authConfig.keyFolderPath}${authConfig.public}`),
+      secretOrKey: readFileSync(`${authConfig.keyFolderPath}${authConfig.public}`),
     });
   }
 
@@ -47,9 +45,6 @@ export class AuthJwtStrategy extends PassportStrategy(Strategy, 'auth') {
             {
               association: 'roles',
               attributes: ['id', 'name'],
-              where: {
-                isDeleted: false,
-              },
               through: {
                 attributes: [],
               },

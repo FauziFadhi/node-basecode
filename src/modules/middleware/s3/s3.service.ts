@@ -4,14 +4,6 @@ import { AwsConfigService } from '@config/aws/config.provider';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { generateRandomString } from '@utils/helper';
 import { S3 } from 'aws-sdk';
-// import {
-//   // CopyObjectRequest,
-//   // DeleteObjectRequest,
-//   // ManagedUpload,
-//   // PutObjectRequest,
-// } from 'aws-sdk/clients/s3';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as moment from 'moment';
 import { extname } from 'path';
 import { fromInstanceMetadata } from '@aws-sdk/credential-providers';
 import {
@@ -21,12 +13,14 @@ import {
   DeleteObjectCommandInput,
   GetObjectCommand,
   GetObjectCommandInput,
+  ObjectCannedACL,
   PutObjectCommand,
   PutObjectCommandInput,
   PutObjectCommandOutput,
   S3Client,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { DateTime } from 'luxon';
 import { UploadAndOrReplaceRequest, UploadRequest } from './interface/upload.interface';
 
 @Injectable()
@@ -114,7 +108,7 @@ export class S3Service {
     }
   }
 
-  private async uploadObject(file: Express.Multer.File, fullPath: string, acl: string = 'public-read') {
+  private async uploadObject(file: Express.Multer.File, fullPath: string, acl: ObjectCannedACL = 'public-read') {
     const params: PutObjectCommandInput = {
       Bucket: this.bucket,
       Key: fullPath,
@@ -156,7 +150,7 @@ export class S3Service {
 
   getFileName(file: Express.Multer.File, baseName?: string): string {
     const fileExt = extname(file.originalname);
-    const dateFileName = moment().format('yyyyMMddHHmmss');
+    const dateFileName = DateTime.now().toFormat('yyyyMMddHHmmss');
     const randomString = generateRandomString(10);
     const newFileName = `${dateFileName}${randomString}`;
 
@@ -175,7 +169,7 @@ export class S3Service {
    * @param req
    * @returns
    */
-  async uploadFile(req: UploadRequest, acl: string = 'public-read'): Promise<PutObjectCommandOutput & { fileName: string }> {
+  async uploadFile(req: UploadRequest, acl: ObjectCannedACL = 'public-read'): Promise<PutObjectCommandOutput & { fileName: string }> {
     const fileName = this.getFileName(req.file, req.baseName);
     const fullPath = this.getFullPath(fileName, req.relativePath);
     const uploaded = await this.uploadObject(req.file, fullPath, acl);
@@ -186,7 +180,7 @@ export class S3Service {
     };
   }
 
-  async uploadFileInvoice(req: UploadRequest, acl: string = 'public-read'): Promise<PutObjectCommandOutput & { fileName: string }> {
+  async uploadFileInvoice(req: UploadRequest, acl: ObjectCannedACL = 'public-read'): Promise<PutObjectCommandOutput & { fileName: string }> {
     const fileName = req.file.filename;
     const fullPath = this.getFullPath(fileName, req.relativePath);
     const uploaded = await this.uploadObject(req.file, fullPath, acl);

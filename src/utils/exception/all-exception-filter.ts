@@ -25,7 +25,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
     // const isAcceptedApi = request.url.includes('api/');
 
     // const user = isAcceptedApi ? request.user : 'ATTACK';
-    const { url } = request;
     // const headers = request.headers;
 
     const status = this.getStatus(exception);
@@ -42,7 +41,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     || exception;
 
     const meta = {
-      path: url,
+      path: request.url,
       method: request.method,
       timestamp: new Date().toISOString(),
     };

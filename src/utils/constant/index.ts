@@ -1,12 +1,7 @@
-import { ConfigService } from '@nestjs/config';
-import * as dotenv from 'dotenv';
-import * as fs from 'fs';
-
 export { default as AUTH } from './auth.constant';
 
 // ENDPOINT
-const configCs = new ConfigService(dotenv.parse(fs.readFileSync('.env')));
-export const AWS_BUCKET_URL = configCs.get('AWS_BUCKET_URL');
+export const { AWS_BUCKET_URL } = process.env;
 
 // UPLOADER TYPE
 export const IMAGE_MIME = ['image/jpeg', 'image/jpg', 'image/png'];

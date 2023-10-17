@@ -74,9 +74,6 @@ export const responseImageUrl = (type: string, image: any) => {
 
   switch (type) {
     case FOLDER_COMMON:
-      result = `${IMAGE_URL}${FOLDER_COMMON}/${image}`;
-      break;
-    case FOLDER_COMMON:
       result = `${IMAGE_URL}temp/${FOLDER_COMMON}/${image}`;
       break;
     default:
