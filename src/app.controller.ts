@@ -7,16 +7,9 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @SerializeResponse('pagination')
+  @SerializeResponse()
   @Get()
   getHello() {
-    return {
-      rows: [{
-        id: 1,
-      }, {
-        id: 1,
-      }],
-      count: 10,
-    };
+    return this.appService.getHello();
   }
 }

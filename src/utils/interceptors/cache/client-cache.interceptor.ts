@@ -27,7 +27,8 @@ export class ClientCacheInterceptor<T> implements NestInterceptor<T, any> {
 
     return next.handle().pipe(tap(() => {
       const res = context.switchToHttp().getResponse<FastifyReply>();
-      res.header('Cache-Control', `${ECacheType[cacheType]}, max-age=${cacheTTL}`);
+      const maxAge = ECacheType[cacheType] === ECacheType.browser ? `max-age=${cacheTTL}` : `s-maxage=${cacheTTL}`;
+      res.header('Cache-Control', `${ECacheType[cacheType]}, ${maxAge}`);
     }));
   }
 }

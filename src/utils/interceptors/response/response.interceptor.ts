@@ -10,10 +10,13 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, unknown> {
     return next.handle().pipe(
       map((data: Record<string, unknown>) => {
         const { meta, ...result } = data;
+        if (!meta) {
+          return data;
+        }
 
         return {
           meta,
-          data: result?.data || result,
+          data: result?.data,
         };
       }),
     );

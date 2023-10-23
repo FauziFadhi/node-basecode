@@ -1,7 +1,7 @@
 import { ILoggedUser } from '@apps/auth/interface/logged-user.interface';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { PERMISSION_KEY } from '@utils/decorators/permission.decorator';
+import { PERMISSION_KEY } from '@utils/decorators';
 import { PERMISSION } from '@utils/enum/authorization.enum';
 
 @Injectable()
