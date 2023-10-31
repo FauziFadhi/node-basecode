@@ -41,9 +41,9 @@ This base code is built with [nest js](https://nestjs.com/) framework that can h
 
 
 ## Dependencies Documentation (Please read these dependencies docs)
-- [NodeJs](https://nodejs.org) >= 16 LTS 
-- [Typescript](https://www.typescriptlang.org/docs/) = 4.7
-- [NestJs](https://nestjs.com/) = 9
+- [NodeJs](https://nodejs.org) >= 20 LTS 
+- [Typescript](https://www.typescriptlang.org/docs/) = 5.1
+- [NestJs](https://nestjs.com/) = 10
 - ORM [Sequelize-Typescript](https://www.npmjs.com/package/sequelize-typescript) = v2.1.3
 - Base ORM [Sequelize](https://sequelize.org/master/) = 6
 - Cache Management [base-repo](https://github.com/FauziFadhi/base-repo) (extending sequelize function with cache feature)
