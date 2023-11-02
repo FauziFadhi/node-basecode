@@ -72,7 +72,7 @@ This base code is built with [nest js](https://nestjs.com/) framework that can h
 - run `npm install`
 - create public and secret key for example authentication and paste it inside `./src/modules/_common/auth/secret/` directory
 - make your .env based on .env.example and fill the minimum required environment property
-- run `npm run migration --db=migrate -- up` or `ts-node migrate up` to run example database migration from migrate.ts file
+- run `npm run migrate up` or `ts-node migrate up` to run example database migration from migrate.ts file
 
 - `npm run start:dev` to run your project with hot Reload
 
@@ -118,13 +118,13 @@ example create migration file: `npm run migrate core -- create --name=<filename>
 ### Example Migration 
 Create new `migration` using npm
    ```sh
-   npm run migrate create --name your-migration-name.ts
+   npm run migrate create -- --name=your-migration-name.ts
 
    # example: npm run migrate create --name add-table-user.ts
    ```
    or using ts-node
    ```sh
-   ts-node migrate create --name your-migration-name.ts
+   ts-node migrate create -- --name=your-migration-name.ts
 
    # example: ts-node migrate create --name add-table-user.ts
    ```
@@ -132,13 +132,13 @@ Create new `migration` using npm
 
 Up `migration` using npm
    ```sh
-   npm run migrate up --name your-file-migration-name-with-extension
+   npm run migrate up -- --name=your-file-migration-name-with-extension
 
    # example: npm run migrate up --name 2021.10.07T03.55.13.add-table-user.ts
    ```
    or using ts-node
    ```sh
-   ts-node migrate up --name your-file-migration-name-with-extension
+   ts-node migrate up --name=your-file-migration-name-with-extension
 
    # example: ts-node migrate up --name 2021.10.07T03.55.13.add-table-user.ts
    ```
@@ -146,13 +146,13 @@ Up `migration` using npm
 
 Down `migration` using npm
    ```sh
-   npm run migrate down --name your-file-migration-name-with-extension
+   npm run migrate down -- --name=your-file-migration-name-with-extension
 
    # example: npm run migrate down --name 2021.10.07T03.55.13.add-table-user.ts
    ```
    or using ts-node
    ```sh
-   ts-node migrate down --name your-file-migration-name-with-extension
+   ts-node migrate down -- --name=your-file-migration-name-with-extension
 
    # example: ts-node migrate down --name 2021.10.07T03.55.13.add-table-user.ts
    ```

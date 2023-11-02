@@ -1,11 +1,9 @@
 import {
   CallHandler, ExecutionContext, Injectable, NestInterceptor,
 } from '@nestjs/common';
-import { circularToJSON } from '@utils/helper';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { URLSearchParams } from 'url';
 
 type Meta = {
   currentRecordCount: number;
