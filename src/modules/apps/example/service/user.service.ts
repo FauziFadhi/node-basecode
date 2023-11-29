@@ -5,14 +5,14 @@ import { UserRole } from '@models/core/UserRole';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Transaction } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
-import { AuthService } from './auth.service';
+import { ExampleAuthService } from './auth.service';
 import { ICreateUserDTO } from './interface/user.interface';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly sequelize: Sequelize,
-    private readonly authService: AuthService,
+    private readonly authService: ExampleAuthService,
   ) {}
 
   async createUser(dto: ICreateUserDTO, transaction1?: Transaction) {
@@ -38,18 +38,13 @@ export class UserService {
     );
   }
 
-  async getUser(userId: number): Promise<User & { roles: Role[] }> {
+  async getUser(userId: number): Promise<User> {
     const user = await User.findOne({
       // ttl: 30,
       rejectOnEmpty: new BadRequestException(),
       where: {
         id: userId,
       },
-      include: [
-        {
-          association: 'roles',
-        },
-      ],
     });
 
     return user;

@@ -56,7 +56,6 @@ export class AuthJwtStrategy extends PassportStrategy(Strategy, 'auth') {
     return {
       userLoginId: userLogin.id,
       permissions: [],
-      roles: userLogin.user.roles.map(({ name }) => name),
       userId: userLogin.user.id,
       username: userLogin.username,
     };

@@ -10,7 +10,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { User as LoggedUser, CacheEndpoint } from '@utils/decorators';
+import { User as LoggedUser } from '@utils/decorators';
 import { transformer } from '@utils/helper';
 
 import { ILoggedUser } from '@apps/auth/interface/logged-user.interface';
@@ -19,7 +19,7 @@ import { UserVm } from './viewmodel/user.viewmodel';
 import { UserService } from '../service/user.service';
 import { CreateUserReq } from './request/create-user.request';
 
-@UseGuards(AuthGuard(['auth', 'anonym']))
+@UseGuards(AuthGuard(['anonym', 'auth']))
 @Controller({ version: '1', path: 'users' })
 @ApiTags('Users')
 export class UserController {
@@ -28,12 +28,6 @@ export class UserController {
   ) {
 
   }
-
-  someBody: any = {
-    name: 'Supardi',
-    email: 'supardi@mail.com',
-    superheroAlias: 'Suparman At Madness',
-  };
 
   @Get(':id')
   async getUser(
@@ -50,31 +44,5 @@ export class UserController {
     const user = await this.userService.createUser(body);
 
     return transformer(UserVm, user);
-  }
-
-  @CacheEndpoint(60, 'cdn')
-  @Post('x1')
-  async testTllCdn(@Body() body: any) {
-    this.someBody = body;
-    return this.someBody;
-  }
-
-  @CacheEndpoint(60)
-  @Get('x1')
-  async testTllCdn1() {
-    return this.someBody;
-  }
-
-  @CacheEndpoint(60)
-  @Post('x2')
-  async testTllCdnPublic(@Body() body: any) {
-    this.someBody = body;
-    return this.someBody;
-  }
-
-  @CacheEndpoint(60, 'server')
-  @Get('x2')
-  async testTllCdn1Public() {
-    return this.someBody;
   }
 }

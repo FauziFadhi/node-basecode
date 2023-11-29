@@ -13,7 +13,7 @@ export class AuthService {
     private readonly commonAuthProvider: AuthProvider,
     private readonly authConfig: AuthConfigService,
   ) {
-
+    console.log('AuthService');
   }
 
   /**

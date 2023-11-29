@@ -3,5 +3,4 @@ export interface ILoggedUser {
   username: string
   userId: number
   permissions: string[];
-  roles: string[];
 }

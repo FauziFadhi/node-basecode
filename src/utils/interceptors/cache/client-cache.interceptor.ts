@@ -10,22 +10,21 @@ import { Observable, tap } from 'rxjs';
 @Injectable()
 export class ClientCacheInterceptor<T> implements NestInterceptor<T, any> {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const reflector = new Reflector();
-    let cacheTTL = reflector.get(
-      CACHE_TTL_METADATA,
-      context.getHandler(),
-    );
-
-    const cacheType = reflector.get(
-      CACHE_TYPE_METADATA,
-      context.getHandler(),
-    );
-
-    if (!cacheTTL) {
-      cacheTTL = 5;
-    }
-
     return next.handle().pipe(tap(() => {
+      const reflector = new Reflector();
+      let cacheTTL = reflector.get(
+        CACHE_TTL_METADATA,
+        context.getHandler(),
+      );
+
+      const cacheType = reflector.get(
+        CACHE_TYPE_METADATA,
+        context.getHandler(),
+      );
+
+      if (!cacheTTL) {
+        cacheTTL = 5;
+      }
       const res = context.switchToHttp().getResponse<FastifyReply>();
       const maxAge = ECacheType[cacheType] === ECacheType.browser ? `max-age=${cacheTTL}` : `s-maxage=${cacheTTL}`;
       res.header('Cache-Control', `${ECacheType[cacheType]}, ${maxAge}`);

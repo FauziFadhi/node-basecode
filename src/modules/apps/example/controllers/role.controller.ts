@@ -2,10 +2,8 @@ import {
   Body,
   Controller,
   Post,
-  UseInterceptors,
 } from '@nestjs/common';
 import { transformer } from '@utils/helper';
-import { ResponseInterceptor } from '@utils/interceptors';
 
 import { ApiTags } from '@nestjs/swagger';
 import { CreateRoleReq } from './request/create-role.request';

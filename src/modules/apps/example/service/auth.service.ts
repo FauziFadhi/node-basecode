@@ -3,7 +3,7 @@ import { AUTH } from '@utils/constant';
 import { hash } from 'bcrypt';
 
 @Injectable()
-export class AuthService {
+export class ExampleAuthService {
   async hashPassword(password: string): Promise<string> {
     const hashedPassword = await hash(password, AUTH.PASSWORD_SALT_ROUND);
 

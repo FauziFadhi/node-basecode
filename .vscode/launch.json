@@ -5,7 +5,8 @@
           "type": "node",
           "request": "launch",
           "name": "Debug Nest Framework",
-          "runtimeExecutable": "nest",
+          "runtimeExecutable": "${workspaceFolder}/node_modules/@nestjs/cli/bin/nest.js",
+          // "runtimeExecutable": "nest",
           "args": [
               "${workspaceFolder}/src/main.ts"
           ],
