@@ -18,6 +18,7 @@ export class CacheController {
     };
   }
 
+  @SerializeResponse('pagination')
   @CacheEndpoint(100, 'cdn')
   @Get('cdn')
   async cacheCDN() {

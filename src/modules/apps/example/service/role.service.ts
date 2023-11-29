@@ -8,15 +8,17 @@ export class RoleService {
   async create(dto: ICreateRoleDTO) {
     const role = await Role.create({
       name: dto.name,
-    }).catch((e) => {
-      if (e instanceof UniqueConstraintError) {
-        if ('name' in e.fields) {
-          throw new BadRequestException('Name must be unique.');
-        }
-      }
+    })
+      .catch(Role.constraintError);
+    // .catch((e) => {
+    //   if (e instanceof UniqueConstraintError) {
+    //     if ('name' in e.fields) {
+    //       throw new BadRequestException('Name must be unique.');
+    //     }
+    //   }
 
-      throw e;
-    });
+    //   throw e;
+    // });
 
     return role;
   }

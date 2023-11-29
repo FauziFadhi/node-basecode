@@ -11,7 +11,9 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, unknown> {
       map((data: Record<string, unknown>) => {
         const { meta, ...result } = data;
         if (!meta) {
-          return data;
+          return {
+            data,
+          };
         }
 
         return {
@@ -19,6 +21,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, unknown> {
           data: result?.data,
         };
       }),
+
     );
   }
 }

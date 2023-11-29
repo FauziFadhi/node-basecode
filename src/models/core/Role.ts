@@ -3,6 +3,8 @@ import {
   AllowNull, Column, Table,
 } from 'sequelize-typescript';
 import { IUnfilledAtt, Optional } from '@utils/base-class/base.interface';
+import { ForeignKeyConstraintError, UniqueConstraintError } from 'sequelize';
+import { BadRequestException } from '@nestjs/common';
 
 type INullableAttr = IUnfilledAtt;
 
@@ -31,4 +33,14 @@ export class Role extends Model<IModel, IModelCreate> implements IModel {
   @AllowNull(false)
   @Column
   declare name: string;
+
+  static constraintError(e: UniqueConstraintError | ForeignKeyConstraintError) {
+    if (e instanceof UniqueConstraintError) {
+      if ('name' in e.fields) {
+        throw new BadRequestException('Name must be unique.');
+      }
+    }
+
+    throw e;
+  }
 }

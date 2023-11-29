@@ -31,6 +31,7 @@ implements NestInterceptor<T, unknown> {
         if (!response?.rows) {
           return {
             data: [],
+            meta: {},
           };
         }
 
