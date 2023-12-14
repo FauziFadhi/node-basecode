@@ -1,4 +1,4 @@
-import { EnumUploadType } from '@_common/uploader/interfaces/base-upload.interface';
+import { EnumUploadType } from 'modules/common/uploader/interfaces/base-upload.interface';
 import {
   IsIn, IsNotEmpty, IsOptional, IsString,
 } from 'class-validator';

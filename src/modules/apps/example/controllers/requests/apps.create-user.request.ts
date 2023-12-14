@@ -3,7 +3,7 @@ import {
   IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength,
 } from 'class-validator';
 
-export class CreateUserReq {
+export class AppsCreateUserReq {
   @IsNotEmpty()
   @IsString()
   @MaxLength(20)

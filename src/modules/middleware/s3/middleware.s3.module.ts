@@ -1,5 +1,5 @@
 import { AwsConfigModule } from '@config/aws/config.module';
-import { Global, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
 import { S3Service } from './s3.service';
 
@@ -8,4 +8,4 @@ import { S3Service } from './s3.service';
   providers: [S3Service],
   exports: [S3Service],
 })
-export class S3Module {}
+export class MiddlewareS3Module {}

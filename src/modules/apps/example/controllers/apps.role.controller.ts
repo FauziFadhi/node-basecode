@@ -6,21 +6,21 @@ import {
 import { transformer } from '@utils/helper';
 
 import { ApiTags } from '@nestjs/swagger';
-import { CreateRoleReq } from './request/create-role.request';
-import { RoleService } from '../service/role.service';
 import { RoleVm } from './viewmodel/role.viewmodel';
+import { AppsRoleService } from '../services/apps.role.service';
+import { AppsCreateRoleReq } from './requests/apps.create-role.request';
 
 @Controller({ version: '1', path: 'roles' })
 @ApiTags('Roles')
-export class RoleController {
+export class AppsRoleController {
   constructor(
-    private readonly roleService: RoleService,
+    private readonly roleService: AppsRoleService,
   ) {
 
   }
 
   @Post()
-  async createUser(@Body() body: CreateRoleReq) {
+  async createUser(@Body() body: AppsCreateRoleReq) {
     const user = await this.roleService.create(body);
 
     return transformer(RoleVm, user);

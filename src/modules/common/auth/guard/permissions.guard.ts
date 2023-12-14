@@ -1,4 +1,4 @@
-import { ILoggedUser } from '@apps/auth/interface/logged-user.interface';
+import { ILoggedUser } from '@apps/auth/interfaces/logged-user.interface';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { PERMISSION_KEY } from '@utils/decorators';

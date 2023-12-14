@@ -27,7 +27,7 @@
       "@cms/*": ["./modules/cms/*"],
       "@apps/*": ["./modules/apps/*"],
       "@middleware/*": ["./modules/middleware/*"],
-      "@_common/*": ["./modules/_common/*"],
+      "@common/*": ["./modules/common/*"],
       "@config/*": ["./config/*"]
     }
   }

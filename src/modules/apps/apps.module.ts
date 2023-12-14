@@ -1,19 +1,19 @@
 import { Module } from '@nestjs/common';
 
 import { RouterModule } from '@nestjs/core';
-import { AuthModule } from './auth/auth.module';
-import { ExampleModule } from './example/example.module';
+import { CommonAuthModule } from '@common/auth/common.auth.module';
+import { AppsExampleModule } from './example/apps.example.module';
 
 @Module({
-  imports: [AuthModule, ExampleModule,
+  imports: [CommonAuthModule, AppsExampleModule,
     RouterModule.register([
       {
         path: 'apps',
-        module: AuthModule,
+        module: CommonAuthModule,
       },
       {
         path: 'apps',
-        module: ExampleModule,
+        module: AppsExampleModule,
       },
     ]),
   ],

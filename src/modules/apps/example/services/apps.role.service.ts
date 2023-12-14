@@ -1,10 +1,9 @@
 import { Role } from '@models/core/Role';
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { UniqueConstraintError } from 'sequelize';
-import { ICreateRoleDTO } from './interface/role.interface';
+import { Injectable } from '@nestjs/common';
+import { ICreateRoleDTO } from './interfaces/role.interface';
 
 @Injectable()
-export class RoleService {
+export class AppsRoleService {
   async create(dto: ICreateRoleDTO) {
     const role = await Role.create({
       name: dto.name,

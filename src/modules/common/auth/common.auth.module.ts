@@ -10,4 +10,4 @@ import { AuthProvider } from './provider.service';
   providers: [AuthProvider],
   exports: [AuthProvider, AuthConfigModule],
 })
-export class AuthCommonModule {}
+export class CommonAuthModule {}

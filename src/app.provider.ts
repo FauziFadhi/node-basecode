@@ -3,7 +3,7 @@ import { AuthConfigModule } from '@config/auth/config.module';
 import { AwsConfigModule } from '@config/aws/config.module';
 import { CacheConfigModule } from '@config/cache/config.module';
 import { DBConfigModule } from '@config/database/config.module';
-import { S3Module } from '@middleware/s3/s3.module';
+import { MiddlewareS3Module } from '@middleware/s3/middleware.s3.module';
 
 export const CONFIG_MODULES = [
   AppConfigModule,
@@ -14,5 +14,5 @@ export const CONFIG_MODULES = [
 ];
 
 export const MIDDLEWARE_MODULES = [
-  S3Module,
+  MiddlewareS3Module,
 ];

@@ -1,4 +1,3 @@
-import { User } from '@models/core/User';
 import {
   Body,
   Controller,
@@ -7,24 +6,21 @@ import {
   ParseIntPipe,
   Post,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { User as LoggedUser } from '@utils/decorators';
 import { transformer } from '@utils/helper';
 
-import { ILoggedUser } from '@apps/auth/interface/logged-user.interface';
 import { ApiTags } from '@nestjs/swagger';
 import { UserVm } from './viewmodel/user.viewmodel';
-import { UserService } from '../service/user.service';
-import { CreateUserReq } from './request/create-user.request';
+import { AppsUserService } from '../services/apps.user.service';
+import { AppsCreateUserReq } from './requests/apps.create-user.request';
 
 @UseGuards(AuthGuard(['anonym', 'auth']))
 @Controller({ version: '1', path: 'users' })
 @ApiTags('Users')
-export class UserController {
+export class AppsUserController {
   constructor(
-    private readonly userService: UserService,
+    private readonly userService: AppsUserService,
   ) {
 
   }
@@ -32,7 +28,7 @@ export class UserController {
   @Get(':id')
   async getUser(
     @Param('id', ParseIntPipe) id: number,
-      @LoggedUser() loggedUser: ILoggedUser,
+      // @LoggedUser() loggedUser: ILoggedUser,
   ): Promise<UserVm> {
     const user = await this.userService.getUser(id);
 
@@ -40,7 +36,7 @@ export class UserController {
   }
 
   @Post()
-  async createUser(@Body() body: CreateUserReq) {
+  async createUser(@Body() body: AppsCreateUserReq) {
     const user = await this.userService.createUser(body);
 
     return transformer(UserVm, user);

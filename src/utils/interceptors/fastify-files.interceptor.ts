@@ -21,8 +21,8 @@ export function FastifyFilesInterceptor(
     protected multer: MulterInstance;
 
     constructor(
-      @Optional()
-      @Inject('MULTER_MODULE_OPTIONS')
+    @Optional()
+    @Inject('MULTER_MODULE_OPTIONS')
       options: Multer,
     ) {
       this.multer = (FastifyMulter as any)({ ...options, ...localOptions });
@@ -34,19 +34,17 @@ export function FastifyFilesInterceptor(
     ): Promise<Observable<any>> {
       const ctx = context.switchToHttp();
 
-      await new Promise<void>((resolve, reject) =>
-        this.multer.array(fieldName, maxCount)(
-          ctx.getRequest(),
-          ctx.getResponse(),
-          (error: any) => {
-            if (error) {
-              // const error = transformException(err);
-              return reject(error);
-            }
-            resolve();
-          },
-        ),
-      );
+      await new Promise<void>((resolve, reject) => this.multer.array(fieldName, maxCount)(
+        ctx.getRequest(),
+        ctx.getResponse(),
+        (error: any) => {
+          if (error) {
+            // const error = transformException(err);
+            return reject(error);
+          }
+          resolve();
+        },
+      ));
 
       return next.handle();
     }

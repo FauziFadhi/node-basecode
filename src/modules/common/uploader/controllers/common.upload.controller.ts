@@ -1,8 +1,6 @@
 import {
   Body,
   Controller,
-  Get,
-  Param,
   Post,
   UploadedFile,
   UploadedFiles,
@@ -14,13 +12,12 @@ import { ResponseInterceptor } from '@utils/interceptors';
 import { FastifyFileInterceptor } from '@utils/interceptors/fastify-file.interceptor';
 import { FastifyFileFieldsInterceptor } from '@utils/interceptors/fastify-file-field.interceptor';
 import { ImageUploaderRequest } from '../requests/uploader.request';
-
-import { CommonUploaderService } from '../services/upload-common-file.service';
+import { CommonUploadService } from '../services/common.upload.service';
 
 @Controller({ path: 'uploader', version: '1' })
-export class UploadController {
+export class CommonUploadController {
   constructor(
-    private readonly commonUploaderService: CommonUploaderService,
+    private readonly commonUploaderService: CommonUploadService,
   ) { }
 
   @Post('image')

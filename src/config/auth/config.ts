@@ -1,4 +1,5 @@
 import { registerAs } from '@nestjs/config';
+
 export default registerAs('auth', () => ({
   JWT_ALGORITHM: process.env.JWT_ALGORITHM,
   JWT_KEY_FOLDER: process.env.JWT_KEY_FOLDER,

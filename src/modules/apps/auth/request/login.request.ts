@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-import { ILogin } from '../interface/login.interface';
+import { ILogin } from '../interfaces/login.interface';
 
 export class LoginRequest implements ILogin {
   @IsNotEmpty()

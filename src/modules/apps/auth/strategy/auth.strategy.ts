@@ -4,12 +4,12 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { AUTH } from '@utils/constant';
-import { AuthProvider } from '@_common/auth/provider.service';
+import { AuthProvider } from 'modules/common/auth/provider.service';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 import { readFileSync } from 'fs';
-import { ILoggedUser } from '../interface/logged-user.interface';
-import { ILoginPayload } from '../interface/login.interface';
+import { ILoggedUser } from '../interfaces/logged-user.interface';
+import { ILoginPayload } from '../interfaces/login.interface';
 
 @Injectable()
 export class AuthJwtStrategy extends PassportStrategy(Strategy, 'auth') {

@@ -3,9 +3,9 @@ import { UserLogin } from '@models/core/UserLogin';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AUTH } from '@utils/constant';
 import { compare } from 'bcrypt';
-import { AuthProvider } from '@_common/auth/provider.service';
+import { AuthProvider } from 'modules/common/auth/provider.service';
 
-import { ILogin, ILoginPayload } from './interface/login.interface';
+import { ILogin, ILoginPayload } from './interfaces/login.interface';
 
 @Injectable()
 export class AuthService {

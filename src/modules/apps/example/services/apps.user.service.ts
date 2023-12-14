@@ -1,18 +1,17 @@
-import { Role } from '@models/core/Role';
 import { User } from '@models/core/User';
 import { UserLogin } from '@models/core/UserLogin';
 import { UserRole } from '@models/core/UserRole';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Transaction } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
-import { ExampleAuthService } from './auth.service';
-import { ICreateUserDTO } from './interface/user.interface';
+import { ICreateUserDTO } from './interfaces/user.interface';
+import { AppsExampleAuthService } from './apps.example-auth.service';
 
 @Injectable()
-export class UserService {
+export class AppsUserService {
   constructor(
     private readonly sequelize: Sequelize,
-    private readonly authService: ExampleAuthService,
+    private readonly authService: AppsExampleAuthService,
   ) {}
 
   async createUser(dto: ICreateUserDTO, transaction1?: Transaction) {

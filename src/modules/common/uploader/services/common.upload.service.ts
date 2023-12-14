@@ -7,7 +7,7 @@ import { IBaseUploadRsp } from '../interfaces/base-upload.interface';
 import { ImageUploaderRequest } from '../requests/uploader.request';
 
 @Injectable()
-export class CommonUploaderService {
+export class CommonUploadService {
   constructor(
     private readonly s3Service: S3Service,
   ) {}
