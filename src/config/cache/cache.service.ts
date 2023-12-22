@@ -35,8 +35,7 @@ export class CacheService {
     ttl: number,
     setValue: () => T | Promise<T>,
   ): Promise<T | null> {
-    const hash = h32(0xABCD);
-    const generatedKey = hash.update(JSON.stringify(key)).digest().toString(16);
+    const generatedKey = this.generateKey(key);
 
     let cacheValue = await this.cacheManager.get(generatedKey);
 
@@ -53,5 +52,16 @@ export class CacheService {
     this.cacheManager.set(generatedKey, cacheValue, { ttl });
 
     return value as T;
+  }
+
+  private generateKey(key: unknown) {
+    const hash = h32(0xABCD);
+    return hash.update(JSON.stringify(key)).digest().toString(16);
+  }
+
+  async writeBackCache(key: unknown, ttl: number, value: unknown, storeProcess: (value) => Promise<void>) {
+    const generatedKey = this.generateKey(key);
+    await this.cacheManager.set(generatedKey, JSON.stringify(value), { ttl });
+    await storeProcess(value);
   }
 }
