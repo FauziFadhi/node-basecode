@@ -4,7 +4,7 @@ import { UserRole } from '@models/core/UserRole';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Transaction } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
-import { ICreateUserDTO } from './interfaces/user.interface';
+import { ICreateUserDTO } from './interfaces/apps.user.interface';
 import { AppsExampleAuthService } from './apps.example-auth.service';
 
 @Injectable()
