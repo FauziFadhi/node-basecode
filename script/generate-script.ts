@@ -79,7 +79,11 @@ async function generate() {
   );
 
   // service
-  const serviceFolderPath = join(modulePath, 'services');
+  const serviceFolderPath = join(
+    modulePath,
+    name.toLocaleLowerCase(),
+    'services',
+  );
   const serviceName = snakeToPascal(`${name}_service`);
   const serviceFilename = `${name.toLocaleLowerCase()}.service`;
   await generateFile(
@@ -98,7 +102,7 @@ async function generate() {
   // controller
   await generateFile(
     {
-      folderPath: join(modulePath, 'controllers'),
+      folderPath: join(modulePath, name.toLocaleLowerCase(), 'controllers'),
       contentFilePath: './script/content/controller.ts',
       filename: `${name.toLocaleLowerCase()}.controller`,
     },
