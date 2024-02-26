@@ -43,7 +43,9 @@ async function generateFile(
 }
 async function generate() {
   // Configure command-line options using yargs
-  const { name, modelPath, modulePath } = await yargs(process.argv.slice(2))
+  const { name, modelPath, modulePath, modulePrefix } = await yargs(
+    process.argv.slice(2),
+  )
     .option('name', {
       alias: 'n',
       describe: 'Name of the class',
@@ -62,9 +64,14 @@ async function generate() {
       default: './src',
       type: 'string',
     })
+    .option('modulePrefix', {
+      describe: 'Prefix of module',
+      type: 'string',
+    })
     .help().argv;
 
   const modelName = snakeToPascal(name);
+  const prefix = modulePrefix?.toLocaleLowerCase() || '';
   // model
   await generateFile(
     {
@@ -84,8 +91,12 @@ async function generate() {
     name.toLocaleLowerCase(),
     'services',
   );
-  const serviceName = snakeToPascal(`${name}_service`);
-  const serviceFilename = `${name.toLocaleLowerCase()}.service`;
+  const serviceName = snakeToPascal(
+    `${prefix ? `${prefix}_` : ''}${name}_service`,
+  );
+  const serviceFilename = `${
+    prefix ? `${prefix}.` : ''
+  }${name.toLocaleLowerCase()}.service`;
   await generateFile(
     {
       folderPath: serviceFolderPath,
@@ -104,11 +115,16 @@ async function generate() {
     {
       folderPath: join(modulePath, name.toLocaleLowerCase(), 'controllers'),
       contentFilePath: './script/content/controller.ts',
-      filename: `${name.toLocaleLowerCase()}.controller`,
+      filename: `${
+        prefix ? `${prefix}.` : ''
+      }${name.toLocaleLowerCase()}.controller`,
     },
     (content) =>
       content
-        .replace('ControllerName', snakeToPascal(`${name}_controller`))
+        .replace(
+          'ControllerName',
+          snakeToPascal(`${prefix ? `${prefix}_` : ''}${name}_controller`),
+        )
         .replace('path_name', name.toLocaleLowerCase())
         .replace('./service', join('../services', serviceFilename))
         .replaceAll('ServiceName', serviceName)
