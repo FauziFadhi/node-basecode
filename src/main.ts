@@ -26,9 +26,13 @@ async function bootstrap() {
   }
 
   install();
-  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
-    querystringParser: (str: string) => qs.parse(str),
-  }));
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter({
+      querystringParser: (str: string) =>
+        Object.fromEntries(new URLSearchParams(str)),
+    }),
+  );
 
   app.register(fastifyMulter.contentParser as any);
 
