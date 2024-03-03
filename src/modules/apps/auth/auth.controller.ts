@@ -3,15 +3,15 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { AuthService } from './auth.service';
 import { LoginRequest } from './request/login.request';
 import { LoginVm } from './viewmodel/login.viewmodel';
+import { AppsAuthService } from './services/apps.auth.service';
 
 @ApiTags('Authentication')
 @Controller({ path: 'auth', version: '1' })
-export class AuthController {
+export class AppsAuthController {
   constructor(
-    private readonly authService: AuthService,
+    private readonly authService: AppsAuthService,
   ) {
 
   }

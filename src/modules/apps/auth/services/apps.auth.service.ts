@@ -4,16 +4,14 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AUTH } from '@utils/constant';
 import { compare } from 'bcrypt';
 import { AuthProvider } from 'modules/common/auth/provider.service';
-
-import { ILogin, ILoginPayload } from './interfaces/login.interface';
+import { ILogin, ILoginPayload } from '../interfaces/login.interface';
 
 @Injectable()
-export class AuthService {
+export class AppsAuthService {
   constructor(
     private readonly commonAuthProvider: AuthProvider,
     private readonly authConfig: AuthConfigService,
   ) {
-    console.log('AuthService');
   }
 
   /**

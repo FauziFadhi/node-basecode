@@ -83,7 +83,7 @@ export const responseImageUrl = (type: string, image: any) => {
 };
 
 // eslint-disable-next-line max-len
-export const generateRandomCode = (length: number): string => Math.random().toString(20).substr(2, length);
+export const generateRandomCode = (length: number): string => Math.random().toString(20).substring(2, length);
 
 export const generateRandomString = (length: number): string => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
