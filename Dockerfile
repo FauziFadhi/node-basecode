@@ -1,4 +1,4 @@
-FROM node:18-buster-slim
+FROM node:20.11-buster-slim
 LABEL author="Rolling Glory <hello@rollingglory.com>" \
     name="RnD" \
     version="1.0"
