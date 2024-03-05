@@ -9,6 +9,7 @@ This base code is built with [nest js](https://nestjs.com/) framework that can h
   * [Basic Command](#basic-command)
     * [Running Project](#running-project)
     * [Migration](#migration)
+    * [Generate Model](#generate-model)
   * [Convention](#convention)
     * [Naming](#naming)
     * [Naming Conventions](#naming-conventions)
