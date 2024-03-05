@@ -21,6 +21,8 @@ This base code is built with [nest js](https://nestjs.com/) framework that can h
   * [Http Request](#http-request)
     * [Http Request with Circuit Breaker](#http-request-with-circuit-breaker)
   * [Custom Cache](#custom-cache)
+  * [Custom Helper](#custom-helper)
+    * [String Convertion Helper](#string-convertion-helper)
   * [Swagger](#swagger)
   * [Folder Structure](#folder-structure)
 
@@ -156,6 +158,46 @@ Down `migration` using npm
 
    # example: ts-node migrate down --name 2021.10.07T03.55.13.add-table-user.ts
    ```
+<br>
+
+
+## Generate Model
+Are you tired of manually creating files for your Nest JS projects? We have the solution for you! we have File Generator command. 
+
+You can streamline your Nest JS development workflow by generating files with just one command. Whether you need a new `model class`, `interface`, `module`, `service`, `and controller`. our Generator has you covered.
+
+Command:
+  ```sh
+   npm run gen:model -- --name module_name --modulePath module_path --modulePrefix module_prefix
+
+   # example: npm run gen:model -- --name Booking --modulePath ./src/modules/cms --modulePrefix cms
+   ```
+
+this will generate file `model.ts`, `module.ts` , `controller.ts`, `service.ts`,  and `request.ts`. the structure folder will look like this
+
+ - module_name // folder
+ - - module.ts
+ - - controllers // folder
+ - - - controller.ts
+ - - services // folder
+ - - - service.ts
+ - - request // folder
+ - - - request.ts
+ - - filter // folder
+ - - - filter.ts
+
+<br>
+
+Description Parameter :
+
+| Parameter    | Required    | Description |
+| -----------  | ----------- | ----------- |
+| name         | True        | Name of Module / Model. Required       |
+| modulePath   | True        | path folder. Required        |
+| modulePrefix | False       | Name of Prefix Module. Optional        |
+
+
+
 <br>
 
 ---
@@ -623,6 +665,132 @@ Or you can use HttpRequest with circuit Breaker if you install this package [Cir
 if you want to use custom cache with custom key, you can follow this [instruction](https://docs.nestjs.com/techniques/caching#interacting-with-the-cache-store)
 
 ----
+<br/>
+<br/>
+
+# Custom Helper
+if you want to add custom helper, please add in helper folder `src`>`utils`>`helper`
+
+## String Convertion Helper
+
+### Convert any case to camel case
+The <b>camel case</b> naming convention requires that the <b>first letter of each word is capitalized, except for the first word</b>. For example `someName` is camel case, but `SomeName` is not. This convention is used in JavaScript for naming variables, functions and classes.
+
+``` typescript
+const toCamelCase = (str) => {
+  const s = str
+    && str
+      .match(
+        /[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g,
+      )
+      .map((x) => x.slice(0, 1).toUpperCase() + x.slice(1).toLowerCase())
+      .join('');
+  return s.slice(0, 1).toLowerCase() + s.slice(1);
+};
+
+toCamelCase('some_database_field_name'); // 'someDatabaseFieldName'
+toCamelCase('Some label that needs to be camelized');
+// 'someLabelThatNeedsToBeCamelized'
+toCamelCase('some-javascript-property'); // 'someJavascriptProperty'
+toCamelCase('some-mixed_string with spaces_underscores-and-hyphens');
+// 'someMixedStringWithSpacesUnderscoresAndHyphens'
+```
+
+### Convert any case to Pascal case
+<b>Pascal case</b> is most often used in object-oriented languages like Java or C#. Pascal case strings have the <b>first letter of each word capitalized</b>. For example `SomeName` is Pascal case, but `someName` is not.
+
+``` typescript
+const toPascalCase = (str) => str
+  .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
+  .map((x) => x.slice(0, 1).toUpperCase() + x.slice(1).toLowerCase())
+  .join('');
+
+toPascalCase('some_database_field_name'); // 'SomeDatabaseFieldName'
+toPascalCase('Some label that needs to be pascalized');
+// 'SomeLabelThatNeedsToBePascalized'
+toPascalCase('some-javascript-property'); // 'SomeJavascriptProperty'
+toPascalCase('some-mixed_string with spaces_underscores-and-hyphens');
+// 'SomeMixedStringWithSpacesUnderscoresAndHyphens'
+```
+
+### Convert any case to kebab case
+<b>Kebab case</b> is most often used in URL slugs. Kebab case strings are <b>all lowercase, with words separated by hyphens</b>. For example `some-name` is kebab case, but `some-Name` is not.
+
+``` typescript
+const toKebabCase = (str) => str
+  && str
+    .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
+    .map((x) => x.toLowerCase())
+    .join('-');
+
+toKebabCase('camelCase'); // 'camel-case'
+toKebabCase('some text'); // 'some-text'
+toKebabCase('some-mixed_string With spaces_underscores-and-hyphens');
+// 'some-mixed-string-with-spaces-underscores-and-hyphens'
+toKebabCase('AllThe-small Things'); // 'all-the-small-things'
+toKebabCase('IAmEditingSomeXMLAndHTML');
+// 'i-am-editing-some-xml-and-html'
+```
+
+### Convert any case to snake case
+<b>Snake case</b> is most often used in languages such as Python or Ruby. Snake case strings are <b>all lowercase, with words separated by underscores</b>. For example `some_name` is snake case, but `some_Name` is not.
+
+``` typescript
+const toSnakeCase = (str) => str
+&& str
+  .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
+  .map((x) => x.toLowerCase())
+  .join('_');
+
+toSnakeCase('camelCase'); // 'camel_case'
+toSnakeCase('some text'); // 'some_text'
+toSnakeCase('some-mixed_string With spaces_underscores-and-hyphens');
+// 'some_mixed_string_with_spaces_underscores_and_hyphens'
+toSnakeCase('AllThe-small Things'); // 'all_the_small_things'
+toSnakeCase('IAmEditingSomeXMLAndHTML');
+// 'i_am_editing_some_xml_and_html'
+```
+
+### Convert any case to title case
+<b>Title case</b> is most often used in titles or headings. Title case strings have the <b>first letter of each word capitalized, with words separated by spaces</b>. For example `Some Name` is title case, but `Some name` is not.
+
+``` typescript
+const toTitleCase = (str) => str
+  .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
+  .map((x) => x.slice(0, 1).toUpperCase() + x.slice(1))
+  .join(' ');
+
+toTitleCase('some_database_field_name'); // 'Some Database Field Name'
+toTitleCase('Some label that needs to be title-cased');
+// 'Some Label That Needs To Be Title Cased'
+toTitleCase('some-package-name'); // 'Some Package Name'
+toTitleCase('some-mixed_string with spaces_underscores-and-hyphens');
+// 'Some Mixed String With Spaces Underscores And Hyphens'
+```
+
+### Convert any case to sentence case
+Finally, <b>sentence case</b> is most often used in sentences. Sentence case strings have their <b>first letter capitalized, with words separated by spaces</b>. For example `Some name` is sentence case, but `some Name` is not.
+
+``` typescript
+const toSentenceCase = (str) => {
+  const s = str
+      && str
+        .match(
+          /[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g,
+        )
+        .join(' ');
+  return s.slice(0, 1).toUpperCase() + s.slice(1);
+};
+
+toSentenceCase('some_database_field_name'); // 'Some database field name'
+toSentenceCase('Some label that needs to be title-cased');
+// 'Some label that needs to be title cased'
+toSentenceCase('some-package-name'); // 'Some package name'
+toSentenceCase('some-mixed_string with spaces_underscores-and-hyphens');
+// 'Some mixed string with spaces underscores and hyphens'
+```
+
+----
 
 <br/>
 
@@ -650,11 +818,16 @@ if you want to use custom cache with custom key, you can follow this [instructio
  - - - core // `place for model if you has 2 or more database, and place your core data to this folder`
  - - - log // `place to this folder all model for log if you has seperate database for logging`
  - - utils
- - - - constant `create new file of constant into this folder based on context of your constant`
- - - - - index `export all constant file that your created here`
- - - - - auth `place all constant that has content for authentication here`
- - - - enum `create new file of enum here`
+ - - - constant // `create new file of constant into this folder based on context of your constant`
+ - - - - index // `export all constant file that your created here`
+ - - - - auth // `place all constant that has content for authentication here`
+ - - - decorator // `place your decorator file here`
+ - - - enum // `create new file of enum here`
  - - - - file
- - - - ErrorCode `place your error code file here`
- - - - - payment `place your error code for payment context here`
- - - - all-exception-filter.ts `all of your error going to this file before returned to frontend`
+ - - - error // `place your error code file here`
+ - - - - index // `place your error code for general context`
+ - - - - auth // `place your error code and message for authorization context`
+ - - - - payment // `place your error code for payment context`
+ - - - exception // `place your exception file here`
+ - - - - all-exception-filter.ts // `all of your error going to this file before returned to frontend`
+ - - - helper // `place your helper file here`

@@ -12,7 +12,10 @@ import {
 
 import { SerializeResponse } from '@utils/decorators';
 import { transformer } from '@utils/helper';
+import { FindOptions } from 'sequelize';
 import { ServiceName } from './service';
+import { FilterName } from './filter';
+import { CreateRequestNameRequest, UpdateRequestNameRequest } from './request';
 
 @Controller({
   path: 'path_name',
@@ -23,8 +26,8 @@ export class ControllerName {
 
   @SerializeResponse('pagination')
   @Get()
-  async getPagination(@Query() q) {
-    const { count, rows } = await this.service.paginate(q);
+  async getPagination(@FilterName() filter: FindOptions, @Query() q) {
+    const { count, rows } = await this.service.paginate(filter);
 
     return { count, rows: transformer({} as any, rows) };
   }
@@ -39,14 +42,14 @@ export class ControllerName {
 
   @SerializeResponse()
   @Post()
-  async create(@Body() body) {
+  async create(@Body() body: CreateRequestNameRequest) {
     const model = await this.service.create(body);
     return transformer({} as any, model);
   }
 
   @HttpCode(204)
   @Patch(':modelId')
-  async update(@Body() body, @Param('modelId') id: number) {
+  async update(@Body() body: UpdateRequestNameRequest, @Param('modelId') id: number) {
     await this.service.update(id, body);
   }
 

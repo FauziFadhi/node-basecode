@@ -1,6 +1,8 @@
 import { UnprocessableEntityException } from '@nestjs/common';
 import { ClassTransformOptions, plainToInstance } from 'class-transformer';
 import { FOLDER_COMMON, IMAGE_MIME, IMAGE_URL } from '@utils/constant';
+import sequelize from 'sequelize';
+import { Literal } from 'sequelize/types/utils';
 
 export const circularToJSON = (circular: unknown) => circular && JSON.parse(JSON.stringify(circular));
 
@@ -50,6 +52,42 @@ export function slugGenerator(reference: string): string {
 
   return reference.replaceAll(/[\W\\_]/g, '-').toLocaleLowerCase().concat(`-${randomCode}`);
 }
+
+export const camelToSnakeCase = (str) => str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+export const pascalToSnakeCase = (str) => str.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
+
+// eslint-disable-next-line max-len
+export const queryPaginationSort = (
+  querySort: string,
+  callback: (field: string) => string | Literal,
+  acceptedString?: string[],
+) => {
+  const stringOrders = querySort?.split(',').filter(Boolean) || [];
+
+  const orders = stringOrders.map((order) => {
+    // const orderFlow = order[0] === '-' ? 'desc NULLS LAST' : 'asc NULLS LAST';
+    const orderFlow = order[0] === '-' ? 'desc' : 'asc';
+    const orderBy = order[0] === '-' ? order.slice(1) : order;
+
+    if (acceptedString && !acceptedString.includes(orderBy)) {
+      throw new UnprocessableEntityException(
+        `query sort '${order}' not accepted`,
+        'V01',
+      );
+    }
+
+    const fieldCallback = callback(orderBy);
+
+    if (typeof fieldCallback === 'string' && fieldCallback?.includes('.')) {
+      const [table, attribute] = fieldCallback.split('.');
+      return [sequelize.literal(`${table}.${camelToSnakeCase(attribute)}`), orderFlow];
+    }
+
+    return [fieldCallback, orderFlow];
+  });
+
+  return orders;
+};
 
 export const imageFileFilter = (req, file, callback) => {
   if (!IMAGE_MIME.includes(file.mimetype)) {

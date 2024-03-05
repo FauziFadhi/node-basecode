@@ -29,6 +29,12 @@ export class ModelName extends Model<IModel, IModelCreate> implements IModel {
   @Column
   declare id: number;
 
+  @Column
+  declare name: string;
+
+  @Column
+  declare price: number;
+
   static constraintError(
     e: UniqueConstraintError | ForeignKeyConstraintError,
   ): Promise<never> {

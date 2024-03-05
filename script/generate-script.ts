@@ -1,18 +1,19 @@
+import { toKebabCase, toPascalCase, toSnakeCase } from '@utils/helper/string-convertion.helper';
 import { readFileSync, promises, constants } from 'fs';
 import { join } from 'path';
 import yargs from 'yargs';
 
-function snakeToPascal(snakeCaseString: string): string {
-  // Split the string into individual words
-  const words = snakeCaseString.split('_');
+// function snakeToPascal(snakeCaseString: string): string {
+//   // Split the string into individual words
+//   const words = snakeCaseString.split('_');
 
-  // Capitalize the first letter of each word and join them together
-  const pascalCaseString = words
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join('');
+//   // Capitalize the first letter of each word and join them together
+//   const pascalCaseString = words
+//     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+//     .join('');
 
-  return pascalCaseString;
-}
+//   return pascalCaseString;
+// }
 
 async function generateFile(
   { folderPath, contentFilePath, filename },
@@ -70,8 +71,9 @@ async function generate() {
     })
     .help().argv;
 
-  const modelName = snakeToPascal(name);
+  const modelName = toPascalCase(name);
   const prefix = modulePrefix?.toLocaleLowerCase() || '';
+  const newName = toKebabCase(name);
   // model
   await generateFile(
     {
@@ -82,21 +84,21 @@ async function generate() {
     (content) =>
       content
         .replace('ModelName', modelName)
-        .replace('table_name', name.toLocaleLowerCase()),
+        .replace('table_name', toSnakeCase(name)),
   );
 
   // service
   const serviceFolderPath = join(
     modulePath,
-    name.toLocaleLowerCase(),
+    newName,
     'services',
   );
-  const serviceName = snakeToPascal(
+  const serviceName = toPascalCase(
     `${prefix ? `${prefix}_` : ''}${name}_service`,
   );
   const serviceFilename = `${
     prefix ? `${prefix}.` : ''
-  }${name.toLocaleLowerCase()}.service`;
+  }${newName}.service`;
   await generateFile(
     {
       folderPath: serviceFolderPath,
@@ -108,27 +110,77 @@ async function generate() {
         .replace('ServiceName', serviceName)
         .replaceAll('ModelName', modelName)
         .replace('./model', `@models/core/${modelName}`)
-        .replaceAll('modelId', `${name}Id`),
+        .replaceAll('modelId', `${name.toLocaleLowerCase()}Id`),
   );
-  // controller
+
+  // request
+  const requestName = toPascalCase(`${prefix ? `${prefix}_` : ''}${name}`);
+  const requestFilename = `${prefix ? `${prefix}.` : ''}${newName}.request`;
   await generateFile(
     {
-      folderPath: join(modulePath, name.toLocaleLowerCase(), 'controllers'),
-      contentFilePath: './script/content/controller.ts',
-      filename: `${
-        prefix ? `${prefix}.` : ''
-      }${name.toLocaleLowerCase()}.controller`,
+      folderPath: join(modulePath, newName, 'request'),
+      contentFilePath: './script/content/request.ts',
+      filename: requestFilename,
     },
     (content) =>
       content
-        .replace(
-          'ControllerName',
-          snakeToPascal(`${prefix ? `${prefix}_` : ''}${name}_controller`),
-        )
+        .replaceAll('RequestName', requestName),
+  );
+
+  // filter
+  const filterName = toPascalCase(`${prefix ? `${prefix}_` : ''}${name}_list_filter`);
+  const filterFilename = `${prefix ? `${prefix}.` : ''}${newName}.filter`;
+  await generateFile(
+    {
+      folderPath: join(modulePath, newName, 'filter'),
+      contentFilePath: './script/content/filter.ts',
+      filename: filterFilename,
+    },
+    (content) =>
+      content
+        .replace('FilterName', filterName)
+        .replaceAll('RequestName', requestName)
+        .replace('./request', join('../request', requestFilename).replaceAll('\\', '/')),
+  );
+
+  // controller
+  const controllerName = toPascalCase(`${prefix ? `${prefix}_` : ''}${name}_controller`);
+  const controllerFilename = `${prefix ? `${prefix}.` : ''}${newName}.controller`;
+  await generateFile(
+    {
+      folderPath: join(modulePath, newName, 'controllers'),
+      contentFilePath: './script/content/controller.ts',
+      filename: controllerFilename,
+    },
+    (content) =>
+      content
+        .replace('ControllerName', controllerName)
         .replace('path_name', name.toLocaleLowerCase())
-        .replace('./service', join('../services', serviceFilename))
+        .replace('./service', join('../services', serviceFilename).replaceAll('\\', '/'))
         .replaceAll('ServiceName', serviceName)
-        .replaceAll('modelId', `${name.toLocaleLowerCase()}Id`),
+        .replaceAll('modelId', `${name.toLocaleLowerCase()}Id`)
+        .replaceAll('FilterName', filterName)
+        .replace('./filter', join('../filter', filterFilename).replaceAll('\\', '/'))
+        .replaceAll('RequestName', requestName)
+        .replace('./request', join('../request', requestFilename).replaceAll('\\', '/')),
+  );
+
+  // module
+  const moduleName = toPascalCase(`${prefix ? `${prefix}_` : ''}${name}_module`);
+  const moduleFilename = `${prefix ? `${prefix}.` : ''}${newName}.module`;
+  await generateFile(
+    {
+      folderPath: join(modulePath, newName),
+      contentFilePath: './script/content/module.ts',
+      filename: moduleFilename,
+    },
+    (content) =>
+      content
+        .replace('ModuleName', moduleName)
+        .replace('./service', `./${join('./services', serviceFilename).replaceAll('\\', '/')}`)
+        .replaceAll('ServiceName', serviceName)
+        .replace('./controller', `./${join('./controllers', controllerFilename).replaceAll('\\', '/')}`)
+        .replaceAll('ControllerName', controllerName),
   );
 }
 
