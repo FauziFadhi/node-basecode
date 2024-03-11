@@ -44,7 +44,9 @@ async function generateFile(
 }
 async function generate() {
   // Configure command-line options using yargs
-  const { name, modelPath, modulePath, modulePrefix } = await yargs(
+  const {
+    name, modelPath, modulePath, modulePrefix,
+  } = await yargs(
     process.argv.slice(2),
   )
     .option('name', {
@@ -81,10 +83,9 @@ async function generate() {
       contentFilePath: './script/content/model.ts',
       filename: modelName,
     },
-    (content) =>
-      content
-        .replace('ModelName', modelName)
-        .replace('table_name', toSnakeCase(name)),
+    (content) => content
+      .replace('ModelName', modelName)
+      .replace('table_name', toSnakeCase(name)),
   );
 
   // service
@@ -105,12 +106,11 @@ async function generate() {
       contentFilePath: './script/content/service.ts',
       filename: serviceFilename,
     },
-    (content) =>
-      content
-        .replace('ServiceName', serviceName)
-        .replaceAll('ModelName', modelName)
-        .replace('./model', `@models/core/${modelName}`)
-        .replaceAll('modelId', `${name.toLocaleLowerCase()}Id`),
+    (content) => content
+      .replace('ServiceName', serviceName)
+      .replaceAll('ModelName', modelName)
+      .replace('./model', `@models/core/${modelName}`)
+      .replaceAll('modelId', `${name.toLocaleLowerCase()}Id`),
   );
 
   // request
@@ -118,13 +118,11 @@ async function generate() {
   const requestFilename = `${prefix ? `${prefix}.` : ''}${newName}.request`;
   await generateFile(
     {
-      folderPath: join(modulePath, newName, 'request'),
+      folderPath: join(modulePath, newName, 'controllers', 'requests'),
       contentFilePath: './script/content/request.ts',
       filename: requestFilename,
     },
-    (content) =>
-      content
-        .replaceAll('RequestName', requestName),
+    (content) => content.replaceAll('RequestName', requestName),
   );
 
   // filter
@@ -132,15 +130,17 @@ async function generate() {
   const filterFilename = `${prefix ? `${prefix}.` : ''}${newName}.filter`;
   await generateFile(
     {
-      folderPath: join(modulePath, newName, 'filter'),
+      folderPath: join(modulePath, newName, 'controllers', 'filters'),
       contentFilePath: './script/content/filter.ts',
       filename: filterFilename,
     },
-    (content) =>
-      content
-        .replace('FilterName', filterName)
-        .replaceAll('RequestName', requestName)
-        .replace('./request', join('../request', requestFilename).replaceAll('\\', '/')),
+    (content) => content
+      .replace('FilterName', filterName)
+      .replaceAll('RequestName', requestName)
+      .replace(
+        './request',
+        join('../request', requestFilename).replaceAll('\\', '/'),
+      ),
   );
 
   // controller
@@ -152,17 +152,16 @@ async function generate() {
       contentFilePath: './script/content/controller.ts',
       filename: controllerFilename,
     },
-    (content) =>
-      content
-        .replace('ControllerName', controllerName)
-        .replace('path_name', name.toLocaleLowerCase())
-        .replace('./service', join('../services', serviceFilename).replaceAll('\\', '/'))
-        .replaceAll('ServiceName', serviceName)
-        .replaceAll('modelId', `${name.toLocaleLowerCase()}Id`)
-        .replaceAll('FilterName', filterName)
-        .replace('./filter', join('../filter', filterFilename).replaceAll('\\', '/'))
-        .replaceAll('RequestName', requestName)
-        .replace('./request', join('../request', requestFilename).replaceAll('\\', '/')),
+    (content) => content
+      .replace('ControllerName', controllerName)
+      .replace('path_name', name.toLocaleLowerCase())
+      .replace('./service', join('../services', serviceFilename).replaceAll('\\', '/'))
+      .replaceAll('ServiceName', serviceName)
+      .replaceAll('modelId', `${name.toLocaleLowerCase()}Id`)
+      .replaceAll('FilterName', filterName)
+      .replace('./filter', `./${join('filters', filterFilename).replaceAll('\\', '/')}`)
+      .replaceAll('RequestName', requestName)
+      .replace('./request', `./${join('requests', requestFilename).replaceAll('\\', '/')}`),
   );
 
   // module
@@ -174,13 +173,12 @@ async function generate() {
       contentFilePath: './script/content/module.ts',
       filename: moduleFilename,
     },
-    (content) =>
-      content
-        .replace('ModuleName', moduleName)
-        .replace('./service', `./${join('./services', serviceFilename).replaceAll('\\', '/')}`)
-        .replaceAll('ServiceName', serviceName)
-        .replace('./controller', `./${join('./controllers', controllerFilename).replaceAll('\\', '/')}`)
-        .replaceAll('ControllerName', controllerName),
+    (content) => content
+      .replace('ModuleName', moduleName)
+      .replace('./service', `./${join('./services', serviceFilename).replaceAll('\\', '/')}`)
+      .replaceAll('ServiceName', serviceName)
+      .replace('./controller', `./${join('./controllers', controllerFilename).replaceAll('\\', '/')}`)
+      .replaceAll('ControllerName', controllerName),
   );
 }
 

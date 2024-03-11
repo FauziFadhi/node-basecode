@@ -169,9 +169,9 @@ You can streamline your Nest JS development workflow by generating files with ju
 
 Command:
   ```sh
-   npm run gen:model -- --name module_name --modulePath module_path --modulePrefix module_prefix
+   npm run gen:module -- --name module_name --modulePath module_path --modulePrefix module_prefix
 
-   # example: npm run gen:model -- --name Booking --modulePath ./src/modules/cms --modulePrefix cms
+   # example: npm run gen:module -- --name Booking --modulePath ./src/modules/cms --modulePrefix cms
    ```
 
 this will generate file `model.ts`, `module.ts` , `controller.ts`, `service.ts`,  and `request.ts`. the structure folder will look like this
