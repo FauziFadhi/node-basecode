@@ -4,7 +4,7 @@ import { DataType } from 'sequelize-typescript';
 export const databasePath = __dirname;
 
 export const up: Migration = async ({ context: queryInterface }) => {
-  await queryInterface.sequelize.transaction(async (transaction) => {
+  await queryInterface.sequelize.transaction(async () => {
     await queryInterface.createTable('user', {
       id: {
         type: DataType.INTEGER,
@@ -22,10 +22,6 @@ export const up: Migration = async ({ context: queryInterface }) => {
         type: DataType.STRING,
         allowNull: false,
       },
-      code: {
-        type: DataType.STRING,
-        allowNull: false,
-      },
       email: {
         type: DataType.STRING,
         allowNull: false,
@@ -37,10 +33,13 @@ export const up: Migration = async ({ context: queryInterface }) => {
       updated_at: DataType.DATE,
       deleted_at: DataType.DATE,
     });
+
+    await queryInterface.addIndex('user', ['user_login_id'], { unique: true, where: { deleted_at: null } });
   });
 };
 export const down: Migration = async ({ context: queryInterface }) => {
-  await queryInterface.sequelize.transaction(async (transaction) => {
+  await queryInterface.sequelize.transaction(async () => {
+    await queryInterface.removeIndex('user', ['user_login_id'], { unique: true, where: { deleted_at: null } });
     await queryInterface.dropTable('user');
   });
 };
