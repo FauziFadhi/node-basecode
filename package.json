@@ -1,6 +1,6 @@
 {
   "name": "project-starter",
-  "version": "10.0.3-rc.0",
+  "version": "10.1.0",
   "description": "",
   "author": "",
   "private": true,
@@ -21,7 +21,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "gen:model": "ts-node -r tsconfig-paths/register ./script/generate-script.ts",
+    "gen:module": "ts-node -r tsconfig-paths/register ./script/generate-module.script.ts",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },

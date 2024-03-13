@@ -35,7 +35,9 @@ class Filter extends BaseFilter {
     this.where = {
       ...this.where,
       [Op.or]: [
-        sequelize.where(sequelize.fn('lower', sequelize.col('name')), { [Op.like]: `%${(search).toLowerCase()}%` }),
+        sequelize.where(sequelize.col('name'), {
+          [Op.iLike]: `%${search.toLowerCase()}%`,
+        }),
       ],
     };
     return this;
