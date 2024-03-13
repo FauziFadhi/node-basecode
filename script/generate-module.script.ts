@@ -147,7 +147,8 @@ async function generate() {
   const viewmodelFolderPath = join(
     modulePath,
     newName,
-    'viewmodel',
+    'controllers',
+    'viewmodels',
   );
   const viewmodelName = toPascalCase(
     `${prefix ? `${prefix}_` : ''}${name}_vm`,
@@ -161,9 +162,8 @@ async function generate() {
       contentFilePath: './script/content/viewmodel.ts',
       filename: viewmodelFilename,
     },
-    (content) =>
-      content
-        .replace('ViewmodelName', viewmodelName),
+    (content) => content
+      .replace('ViewmodelName', viewmodelName),
   );
 
   // controller
@@ -185,7 +185,7 @@ async function generate() {
       .replace('./filter', `./${join('filters', filterFilename).replaceAll('\\', '/')}`)
       .replaceAll('RequestName', requestName)
       .replace('./request', `./${join('requests', requestFilename).replaceAll('\\', '/')}`)
-      .replace('./viewmodel', join('../viewmodel', viewmodelFilename).replaceAll('\\', '/'))
+      .replace('./viewmodel', `./${join('viewmodels', requestFilename).replaceAll('\\', '/')}`)
       .replaceAll('ViewmodelName', viewmodelName),
   );
 
