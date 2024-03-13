@@ -143,6 +143,29 @@ async function generate() {
         .replace('./request', join('../request', requestFilename).replaceAll('\\', '/')),
   );
 
+  // viewmodel
+  const viewmodelFolderPath = join(
+    modulePath,
+    newName,
+    'viewmodel',
+  );
+  const viewmodelName = toPascalCase(
+    `${prefix ? `${prefix}_` : ''}${name}_vm`,
+  );
+  const viewmodelFilename = `${
+    prefix ? `${prefix}.` : ''
+  }${newName}.viewmodel`;
+  await generateFile(
+    {
+      folderPath: viewmodelFolderPath,
+      contentFilePath: './script/content/viewmodel.ts',
+      filename: viewmodelFilename,
+    },
+    (content) =>
+      content
+        .replace('ViewmodelName', viewmodelName),
+  );
+
   // controller
   const controllerName = toPascalCase(`${prefix ? `${prefix}_` : ''}${name}_controller`);
   const controllerFilename = `${prefix ? `${prefix}.` : ''}${newName}.controller`;
@@ -162,7 +185,9 @@ async function generate() {
         .replaceAll('FilterName', filterName)
         .replace('./filter', join('../filter', filterFilename).replaceAll('\\', '/'))
         .replaceAll('RequestName', requestName)
-        .replace('./request', join('../request', requestFilename).replaceAll('\\', '/')),
+        .replace('./request', join('../request', requestFilename).replaceAll('\\', '/'))
+        .replace('./viewmodel', join('../viewmodel', viewmodelFilename).replaceAll('\\', '/'))
+        .replaceAll('ViewmodelName', viewmodelName),
   );
 
   // module

@@ -16,6 +16,7 @@ import { FindOptions } from 'sequelize';
 import { ServiceName } from './service';
 import { FilterName } from './filter';
 import { CreateRequestNameRequest, UpdateRequestNameRequest } from './request';
+import { ViewmodelName } from './viewmodel';
 
 @Controller({
   path: 'path_name',
@@ -29,7 +30,7 @@ export class ControllerName {
   async getPagination(@FilterName() filter: FindOptions, @Query() q) {
     const { count, rows } = await this.service.paginate(filter);
 
-    return { count, rows: transformer({} as any, rows) };
+    return { count, rows: transformer(ViewmodelName, rows) };
   }
 
   @SerializeResponse()
@@ -37,14 +38,14 @@ export class ControllerName {
   async getOne(@Param('modelId') id: number) {
     const model = await this.service.getOne(id);
 
-    return transformer({} as any, model);
+    return transformer(ViewmodelName, model);
   }
 
   @SerializeResponse()
   @Post()
   async create(@Body() body: CreateRequestNameRequest) {
     const model = await this.service.create(body);
-    return transformer({} as any, model);
+    return transformer(ViewmodelName, model);
   }
 
   @HttpCode(204)
