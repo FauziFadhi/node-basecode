@@ -4,14 +4,13 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AllExceptionsFilter } from '@utils/exception/all-exception-filter';
-import { CustomValidationPipe } from '@utils/pipe/ValidationPipe';
+import { CustomValidationPipe } from '@utils/pipes/validation.pipe';
 import { install } from 'source-map-support';
 
 import { satisfies } from 'semver';
-import * as qs from 'qs';
 import * as fastifyMulter from 'fastify-multer';
 import { GlobalCustomResponseInterceptor } from '@utils/interceptors/global-response.interceptor';
+import { HttpExceptionFilter, BaseExceptionFilter, SequelizeExceptionFilter } from '@utils/exception';
 import { engines, version } from '../package.json';
 
 import { AppModule } from './app.module';
@@ -29,8 +28,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({
-      querystringParser: (str: string) =>
-        Object.fromEntries(new URLSearchParams(str)),
+      querystringParser: (str: string) => Object.fromEntries(new URLSearchParams(str)),
     }),
   );
 
@@ -44,14 +42,27 @@ async function bootstrap() {
       enableImplicitConversion: true,
     },
   }));
-  app.useGlobalFilters(new AllExceptionsFilter());
 
   app.enableVersioning({
     type: VersioningType.URI,
   });
 
+  const logger = new Logger();
+  app.useGlobalFilters(
+    new BaseExceptionFilter(logger),
+    new HttpExceptionFilter(logger),
+    new SequelizeExceptionFilter(logger),
+  );
   app.setGlobalPrefix('api');
   app.useGlobalInterceptors(new GlobalCustomResponseInterceptor());
+
+  process.on('unhandledRejection', (reason, promise) => {
+    logger.error({
+      reason,
+      promise,
+      message: 'Unhandled Rejection',
+    });
+  });
 
   const config = new DocumentBuilder()
     .setTitle('Apps')
@@ -72,6 +83,6 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const appPort = configService.get<number>('app.port');
   await app.listen(appPort || 3000, '0.0.0.0');
-  new Logger().log(`Your Application run in ${await app.getUrl()}`, 'Nest Application');
+  logger.log(`Your Application run in ${await app.getUrl()}`, 'Nest Application');
 }
 bootstrap();

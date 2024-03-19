@@ -7,7 +7,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 
-import { VALIDATION_CODE } from '../error';
+export const VALIDATION_CODE = 'V01';
 
 @Injectable()
 export class CustomValidationPipe extends ValidationPipe implements PipeTransform<any> {
