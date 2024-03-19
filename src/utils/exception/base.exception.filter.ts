@@ -14,12 +14,11 @@ export class BaseExceptionFilter implements ExceptionFilter {
   constructor(private readonly logger: Logger) {}
 
   catch(exception: Error & { code?: string }, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const request: FastifyRequest = ctx.getRequest();
-
     const errorCode = exception?.code || undefined;
 
     const errorMessage = exception.message;
+
+    const request: FastifyRequest = host.switchToHttp().getRequest();
     const metaData = meta({ url: request.url, method: request.method });
 
     this.logger.error(
@@ -40,9 +39,8 @@ export class BaseExceptionFilter implements ExceptionFilter {
       exception.stack,
       'BaseExceptionFilter',
     );
-    const response: FastifyReply = ctx.getResponse();
 
-    return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(
+    return host.switchToHttp().getResponse().status(HttpStatus.INTERNAL_SERVER_ERROR).send(
       responseBody({
         code: errorCode,
         message: 'internal server error',

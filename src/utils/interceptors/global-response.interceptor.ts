@@ -9,8 +9,7 @@ import { Observable, tap } from 'rxjs';
 export class GlobalCustomResponseInterceptor<T> implements NestInterceptor<T> {
   intercept(context: ExecutionContext, next: CallHandler): Observable<void> {
     return next.handle().pipe(tap(() => {
-      const res = context.switchToHttp().getResponse<FastifyReply>();
-      res.header('project-version', projectVersion);
+      context.switchToHttp().getResponse<FastifyReply>().header('project-version', projectVersion);
     }));
   }
 }

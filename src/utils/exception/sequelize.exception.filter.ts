@@ -15,12 +15,10 @@ export class SequelizeExceptionFilter implements ExceptionFilter {
   constructor(private readonly logger: Logger) {}
 
   catch(exception: BaseError & { code?: string }, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const request: FastifyRequest = ctx.getRequest();
-
     const errorCode = exception?.code || undefined;
 
     const errorMessage = exception.message;
+    const request: FastifyRequest = host.switchToHttp().getRequest();
     const metaData = meta({ url: request.url, method: request.method });
 
     this.logger.error(
@@ -41,7 +39,7 @@ export class SequelizeExceptionFilter implements ExceptionFilter {
       exception.stack,
       'SequelizeExceptionFilter',
     );
-    const response: FastifyReply = ctx.getResponse();
+    const response: FastifyReply = host.switchToHttp().getResponse();
 
     return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(
       responseBody({
