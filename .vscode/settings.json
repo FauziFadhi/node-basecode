@@ -1,5 +1,7 @@
 {
   "eslint.format.enable": true,
+  "editor.defaultFormatter": null,
+  "editor.tabSize": 2,
   "eslint.validate": [
     "typescript",
     "javascript"
