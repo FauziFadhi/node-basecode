@@ -139,7 +139,7 @@ async function generate() {
       .replaceAll('RequestName', requestName)
       .replace(
         './request',
-        join('../request', requestFilename).replaceAll('\\', '/'),
+        join('../requests', requestFilename).replaceAll('\\', '/'),
       ),
   );
 
@@ -185,7 +185,7 @@ async function generate() {
       .replace('./filter', `./${join('filters', filterFilename).replaceAll('\\', '/')}`)
       .replaceAll('RequestName', requestName)
       .replace('./request', `./${join('requests', requestFilename).replaceAll('\\', '/')}`)
-      .replace('./viewmodel', `./${join('viewmodels', requestFilename).replaceAll('\\', '/')}`)
+      .replace('./viewmodel', `./${join('viewmodels', viewmodelFilename).replaceAll('\\', '/')}`)
       .replaceAll('ViewmodelName', viewmodelName),
   );
 
