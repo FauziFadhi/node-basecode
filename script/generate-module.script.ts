@@ -137,6 +137,8 @@ async function generate() {
     (content) => content
       .replace('FilterName', filterName)
       .replaceAll('RequestName', requestName)
+      .replaceAll('ModelName', modelName)
+      .replace('./model', `@models/core/${modelName}`)
       .replace(
         './request',
         join('../requests', requestFilename).replaceAll('\\', '/'),

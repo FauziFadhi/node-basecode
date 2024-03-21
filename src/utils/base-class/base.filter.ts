@@ -6,8 +6,8 @@ import {
   WhereOptions,
 } from 'sequelize/types';
 
-export class BaseFilter {
-  where?: WhereOptions;
+export class BaseFilter<T> {
+  where?: WhereOptions<T>;
 
   include?: Includeable[] = [];
 
@@ -15,7 +15,7 @@ export class BaseFilter {
 
   offset?: number;
 
-  having?: WhereOptions;
+  having?: WhereOptions<T>;
 
   attributes?: FindAttributeOptions;
 

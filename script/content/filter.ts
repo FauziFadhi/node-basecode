@@ -2,6 +2,7 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { BaseFilter } from '@utils/base-class/base.filter';
 import sequelize, { FindOptions, Op } from 'sequelize';
 import { ListRequestNameQuery } from './request';
+import { ModelName } from './model';
 
 export const FilterName = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): FindOptions => {
@@ -12,7 +13,7 @@ export const FilterName = createParamDecorator(
   },
 );
 
-class Filter extends BaseFilter {
+class Filter extends BaseFilter<ModelName> {
   constructor(query: ListRequestNameQuery) {
     super(query);
 
