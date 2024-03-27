@@ -30,7 +30,7 @@ const sequelize = new Sequelize({
 
 export const migrator = new Umzug({
   migrations: {
-    glob: `{${databasePath}/core/*.ts,}`,
+    glob: `${databasePath}/core/*.ts`,
   },
   create: {
     folder: `${databasePath}/core`,
