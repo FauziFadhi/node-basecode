@@ -803,6 +803,80 @@ toSentenceCase('some-mixed_string with spaces_underscores-and-hyphens');
 - you can open the docs at `localhost:3000/api/docs`, if the example value not appear, `you can delete the node_modules` -> `npm i` -> `npm run buid` -> `try to re run`
 <br/>
 
+# Upload Using Presigned URL for Amazon S3
+
+## Introduction
+This guide provides instructions on how to upload files to Amazon S3 (Simple Storage Service) using presigned URLs. Presigned URLs are URLs that provide temporary access to upload objects to your S3 bucket without requiring AWS credentials.
+
+## Prerequisites
+Before proceeding, ensure you have the following:
+- AWS Access Key ID and Secret Access Key with the necessary permissions to upload files to the specified S3 bucket.
+- AWS default region where your S3 bucket is located.
+- Details of your S3 bucket and its corresponding URL.
+
+## Step 1: Set AWS Credentials
+Fill in your AWS credentials in the environment variables:
+```bash
+export AWS_ACCESS_KEY_ID=<your-access-key-id>
+export AWS_SECRET_ACCESS_KEY=<your-secret-access-key>
+export AWS_DEFAULT_REGION=<your-default-region>
+export AWS_BUCKET=<your-bucket-name>
+export AWS_BUCKET_URL=<your-bucket-url>
+```
+## Step 2: Send Upload Request
+Send a POST request to `/api/v1/uploader/image` with the following payload:
+```
+curl --location 'http://127.0.0.1:3000/api/v1/uploader/image' \
+--header 'Content-Type: application/json' \
+--data '{
+  "type": "common",
+  "fileName": "myfile.jpg".
+  "bytesLength": 34181
+}'
+```
+
+## Step 3: Receive Presigned URL
+If the request is successful, the API will respond with a presigned URL for uploading the file:
+
+```
+{
+  "url": "<presigned-url>"
+}
+```
+
+## Step 4: Upload File
+Use the received presigned URL to upload the file using a PUT request. Example:
+
+```
+curl --location --request PUT '<presigned-url>' \
+--header 'Content-Type: image/png' \
+--data '@/path/to/your/file.jpg'
+
+```
+
+## Step 5: Access Uploaded File
+Once the file is successfully uploaded, it can be accessed using the URL provided by your S3 bucket:
+
+The `<uploaded-file-url>` will be `<presigned-url>` without all the query parameters:
+```
+https://bucket.ap-southeast-1.amazonaws.com/common/name-file.jpg
+```
+
+# File to work with
+The most crucial files in the code are:
+
+- In `common.upload.service.ts`, locate the function `getUploadUrl`
+- In `s3.service.ts` find the function `generatePresignedUploadUrl`
+
+## Optionals:
+To add CORS to the S3 endpoint, refer to the [PutBucketCorsCommand documentation](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/s3/command/PutBucketCorsCommand/).
+
+## Rererences:
+- https://blog.bitsrc.io/multi-file-uploads-using-nextjs-13-serverless-functionality-express-4-and-amazon-s3-pre-signed-e9152d85ee3
+- https://medium.com/@aidan.hallett/securing-aws-s3-uploads-using-presigned-urls-aa821c13ae8d
+- https://cloudnature.net/blog/building-a-high-performing-static-backoffice-on-aws-with-sveltekit--part-3
+- https://docs.aws.amazon.com/AmazonS3/latest/userguide/example_s3_PutObject_section.html
+
 # Folder Structure
 
  ```Incoming```

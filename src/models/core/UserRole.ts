@@ -1,6 +1,6 @@
 import { AutoInvalidate, Model } from 'base-repo';
 import {
- BelongsTo, ForeignKey, PrimaryKey, Table 
+ BelongsTo, Column, ForeignKey, PrimaryKey, Table 
 } from 'sequelize-typescript';
 import { IUnfilledAtt, Optional } from '@utils/base-class/base.interface';
 
@@ -35,10 +35,12 @@ export class UserRole extends Model<IModel, IModelCreate> implements IModel {
 
   @PrimaryKey
   @ForeignKey(() => User)
+  @Column
   declare userId: number;
 
   @PrimaryKey
   @ForeignKey(() => Role)
+  @Column
   declare roleId: number;
 
   @BelongsTo(() => Role)

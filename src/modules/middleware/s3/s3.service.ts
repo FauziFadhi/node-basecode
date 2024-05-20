@@ -22,6 +22,7 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { DateTime } from 'luxon';
 import { UploadAndOrReplaceRequest, UploadRequest } from './interface/upload.interface';
+import { ONE_HOUR } from '@utils/constant';
 
 @Injectable()
 export class S3Service {
@@ -246,6 +247,24 @@ export class S3Service {
         ...uploaded,
         fileName: data.fileName,
       };
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async generatePresignedUploadUrl(fileName: string, bytes: number): Promise<String> {
+    try {
+      const params: PutObjectCommandInput = {
+        Bucket: this.bucket,
+        Key: fileName,
+        ACL: 'public-read',
+        ContentLength: bytes
+      };
+
+      const command = new PutObjectCommand(params);
+      const url = await getSignedUrl(this.s3, command, { expiresIn: ONE_HOUR });
+
+      return url;
     } catch (error) {
       throw new Error(error);
     }
