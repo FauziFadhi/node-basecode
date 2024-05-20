@@ -71,6 +71,7 @@
     "@nestjs/cli": "^10.3.2",
     "@nestjs/schematics": "^10.1.1",
     "@nestjs/testing": "^10.3.4",
+    "@rgb/eslint-plugin-nestjs": "git+https://repository.rollingglory.com/rollingglory/rgb-nestjs-linter#v1.0.2",
     "@swc/cli": "^0.1.65",
     "@swc/core": "^1.4.8",
     "@types/bcrypt": "^5.0.2",
