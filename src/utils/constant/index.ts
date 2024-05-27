@@ -16,4 +16,4 @@ export const IMAGE_URL = `${AWS_BUCKET_URL}${FOLDER_UPLOADER}`;
 export const ONE_MEGABYTE = 1048576;
 
 // TIME UNIT IN SECOND
-export const ONE_HOUR = 36000;
+export const ONE_HOUR = 3600;

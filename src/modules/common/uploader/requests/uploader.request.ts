@@ -1,3 +1,4 @@
+// eslint-disable-next-line max-classes-per-file
 import { EnumUploadType } from 'modules/common/uploader/interfaces/base-upload.interface';
 import {
   IsIn, IsNotEmpty, IsNumber, IsOptional, IsString,
@@ -24,8 +25,8 @@ export class CreateSignedUrlRequest {
   @IsString()
     fileName: string;
 
-    @IsNotEmpty()
-    @IsNumber()
-    @Max(ONE_MEGABYTE * 2)
-      bytesLength: number;
+  @IsNotEmpty()
+  @IsNumber()
+  @Max(ONE_MEGABYTE * 2)
+    bytesLength: number;
 }
