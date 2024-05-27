@@ -3,6 +3,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { SequelizeStorage, Umzug } from 'umzug';
 import * as dotenv from 'dotenv';
 
+import { join } from 'path';
 import { databasePath } from '../../migrations/migration-template';
 import { configMapping } from './config';
 
@@ -30,7 +31,8 @@ const sequelize = new Sequelize({
 
 export const migrator = new Umzug({
   migrations: {
-    glob: `${databasePath}/core/*.ts`,
+    // glob: `${databasePath}/core/*.ts`,
+    glob: join(`${databasePath}`, 'core', '*.ts'),
   },
   create: {
     folder: `${databasePath}/core`,
