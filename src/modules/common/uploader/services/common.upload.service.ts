@@ -3,8 +3,9 @@ import { S3Service } from '@middleware/s3/s3.service';
 import { Injectable } from '@nestjs/common';
 import { extname } from 'path';
 import { DateTime } from 'luxon';
+import { generateRandomString } from '@utils/helper';
 import { IBaseUploadRsp } from '../interfaces/base-upload.interface';
-import { ImageUploaderRequest } from '../requests/uploader.request';
+import { CreateSignedUrlRequest, ImageUploaderRequest } from '../requests/uploader.request';
 
 @Injectable()
 export class CommonUploadService {
@@ -38,6 +39,20 @@ export class CommonUploadService {
       fileName: upload.fileName,
       type: body.type,
       url: upload.Location,
+    };
+  }
+
+  async getUploadUrl(body: CreateSignedUrlRequest, temporaryUpload = false) {
+    const pathUpload = temporaryUpload ? `/temp/${body.type}` : body.type;
+    const fileExt = extname(body.fileName);
+    const thisTime = DateTime.now().toFormat('yyyyMMddHHmmss');
+    const randomString = generateRandomString(5);
+
+    const newFileName = `${pathUpload}/${thisTime}${randomString}${fileExt}`;
+
+    const url = await this.s3Service.generatePresignedUploadUrl({ relativePath: newFileName, bytes: body.bytesLength });
+    return {
+      url,
     };
   }
 }

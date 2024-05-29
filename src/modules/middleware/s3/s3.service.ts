@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { AwsConfigService } from '@config/aws/config.provider';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { generateRandomString } from '@utils/helper';
 import { S3 } from 'aws-sdk';
 import { extname } from 'path';
-import { fromInstanceMetadata } from '@aws-sdk/credential-providers';
 import {
   CopyObjectCommand,
   CopyObjectCommandInput,
@@ -31,6 +30,7 @@ export class S3Service {
 
   constructor(
     private readonly awsConfigService: AwsConfigService,
+    private readonly logger: Logger,
   ) {
     this.s3 = this.setup();
     this.bucket = awsConfigService.bucket;
@@ -38,18 +38,21 @@ export class S3Service {
 
   private setup() {
     return new S3Client({
-      // credentials: {
-      //   accessKeyId: this.awsConfigService.accessKeyId,
-      //   secretAccessKey: this.awsConfigService.secretAccessKey,
-      // },
-      credentials: fromInstanceMetadata({
-        // Optional. The connection timeout (in milliseconds) to apply to any remote requests.
-        // If not specified, a default value of `1000` (one second) is used.
-        timeout: 5000,
-        // Optional. The maximum number of times any HTTP connections should be retried. If not
-        // specified, a default value of `0` will be used.
-        maxRetries: 0,
-      }),
+      credentials: {
+        accessKeyId: this.awsConfigService.accessKeyId,
+        secretAccessKey: this.awsConfigService.secretAccessKey,
+      },
+
+      // more secure use fromInstanceMetadata
+
+      // credentials: fromInstanceMetadata({
+      //   // Optional. The connection timeout (in milliseconds) to apply to any remote requests.
+      //   // If not specified, a default value of `1000` (one second) is used.
+      //   timeout: 5000,
+      //   // Optional. The maximum number of times any HTTP connections should be retried. If not
+      //   // specified, a default value of `0` will be used.
+      //   maxRetries: 0,
+      // }),
       region: this.awsConfigService.defaultRegion,
     });
   }
@@ -202,7 +205,7 @@ export class S3Service {
   async removeFile(fileName: string, relativePath?: string) {
     const fullPath = this.getFullPath(fileName, relativePath);
 
-    return this.removeObject(fullPath).catch((e) => {
+    return this.removeObject(fullPath).catch(() => {
       // Log.createError({
       //   detail: '',
       //   title: 'ERROR Move File',
@@ -248,6 +251,24 @@ export class S3Service {
       };
     } catch (error) {
       throw new Error(error);
+    }
+  }
+
+  async generatePresignedUploadUrl(obj: {
+    relativePath: string, bytes: number, ACL?: ObjectCannedACL
+  }, opts?: { expiresIn?: number }): Promise<string> {
+    try {
+      const command = new PutObjectCommand({
+        Bucket: this.bucket,
+        ContentLength: obj.bytes,
+        ACL: obj.ACL || 'public-read',
+        Key: obj.relativePath,
+      });
+
+      return await getSignedUrl(this.s3, command, { expiresIn: opts?.expiresIn || 300 });
+    } catch (error) {
+      this.logger.error({ message: 'failed to generate upload url.', cause: error.message }, error.stack);
+      throw new InternalServerErrorException('failed to generate upload url.');
     }
   }
 }

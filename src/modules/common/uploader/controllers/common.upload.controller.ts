@@ -11,7 +11,7 @@ import { imageFileFilter } from '@utils/helper';
 import { ResponseInterceptor } from '@utils/interceptors';
 import { FastifyFileInterceptor } from '@utils/interceptors/fastify-file.interceptor';
 import { FastifyFileFieldsInterceptor } from '@utils/interceptors/fastify-file-field.interceptor';
-import { ImageUploaderRequest } from '../requests/uploader.request';
+import { CreateSignedUrlRequest, ImageUploaderRequest } from '../requests/uploader.request';
 import { CommonUploadService } from '../services/common.upload.service';
 
 @Controller({ path: 'uploader', version: '1' })
@@ -38,6 +38,11 @@ export class CommonUploadController {
   @UseInterceptors(FastifyFileInterceptor('file', { fileFilter: imageFileFilter }))
   uploadFile(@UploadedFile() file: Express.Multer.File) {
     console.log(file);
+  }
+
+  @Post('create-presigned-url')
+  async getSignedUrl(@Body() body: CreateSignedUrlRequest) {
+    return this.commonUploaderService.getUploadUrl(body);
   }
 
   @Post('uploadx')

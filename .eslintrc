@@ -12,17 +12,17 @@
   },
   "plugins": [
     "@typescript-eslint/eslint-plugin",
-    "@rgb/nestjs"
-    // "import"
+    // "@rgb/nestjs"
+    "import"
   ],
   "extends": [
     "airbnb-base",
     "airbnb-typescript/base",
-    "plugin:@rgb/nestjs/nestjs-config",
-    "plugin:@typescript-eslint/recommended"
+    // "plugin:@rgb/nestjs/nestjs-config",
+    "plugin:@typescript-eslint/recommended",
 
     // "plugin:prettier/recommended",
-    // "plugin:import/recommended"
+    "plugin:import/recommended"
   ],
   "root": true,
   "env": {
