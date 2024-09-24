@@ -6,6 +6,7 @@ import * as dotenv from 'dotenv';
 import { join } from 'path';
 import { databasePath } from '../../migrations/migration-template';
 import { configMapping } from './config';
+import { mainPath } from 'main';
 
 /** DATABASE MIGRATOR */
 
@@ -32,7 +33,7 @@ const sequelize = new Sequelize({
 export const migrator = new Umzug({
   migrations: {
     // glob: `${databasePath}/core/*.ts`,
-    glob: join(`${databasePath}`, 'core', '*.ts'),
+    glob: ['migrations/core/*.ts', { cwd: mainPath }],
   },
   create: {
     folder: `${databasePath}/core`,

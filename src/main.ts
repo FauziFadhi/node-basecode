@@ -16,6 +16,8 @@ import { engines, version } from '../package.json';
 import { AppModule } from './app.module';
 
 export const projectVersion = version;
+export const mainPath = __dirname;
+
 
 async function bootstrap() {
   const nodeVersion = engines.node;
